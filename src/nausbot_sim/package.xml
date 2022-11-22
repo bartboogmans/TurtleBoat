@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>nausbot_sim</name>
+  <version>0.0.1</version>
+  <description>Simulator for simple ships at specified rate</description>
+  <maintainer email="bartboogmans@hotmail.com">bart</maintainer>
+  <license>GPLv3</license>
+  <url type="website">https://github.com/bartboogmans/Nausbot</url>
+  <author email="bartboogmans@hotmail.com">Jane Doe</author>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geonav_transform</build_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>sensor_msgs</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>geonav_transform</build_export_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geonav_transform</exec_depend>
+  <export>
+
+  </export>
+</package>
