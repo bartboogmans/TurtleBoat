@@ -9,7 +9,7 @@ from enum import Enum, auto
 import time
 import math
 from sensor_msgs.msg import NavSatFix 
-
+import numpy as np
 
 class Vessel: 
     """
@@ -46,13 +46,27 @@ class TitoNeri(Vessel):
     
     def __init__(self,name_,x_):
         super().__init__(name_,x_)
-        self.aftthruster_rps_to_force = lambda v: numpy.sign(v)*0.0009752*v^2
-        self.bow_pwm_to_force = lambda PWM_value: PWM_value*3.575
+        self.thrustToForce = [lambda v: ((1.925e-5)*v*v*v+(1.061e-2)*v), # in RPS 
+                              lambda v: ((1.925e-5)*v*v*v+(1.061e-2)*v), # in RPS 
+                              lambda PWM_value: PWM_value*3.575] # input is pwm [-1:1]
+        # purely quadratic relation aft thruster: lambda v: np.sign(v)*0.0009752*v**2,
+        self.actLims = [[-3800,3800],[-3800,3800],[-1,1]]
         self.u = [0,0,0]
-        self.alpha = [0,0] 
+        self.alpha = [0,0,math.pi/2] 
+        self.r_thruster = [np.array([-0.42,-0.08]),np.array([-0.42,+0.08]),np.array([-0.28,-0.00])]
         
     def getResultantThrust(self):
         return 1
+    def set_u(self):
+        pass
+    def get_thr_force(self,nthr,v):
+        # if v< min: v = min
+        # elif v>max: v=max
+        
+        # run relation:
+        pass
+        # for thr = 1:3.....
+        
 
 class timedFncTracker:
     """
@@ -87,26 +101,27 @@ class vesselSim:
         self.runtimer = timedFncTracker(rate_)
         self.lastt = self.runtimer.tstart
     def simstep(self,t):
-        
         # Calculate forces and torques
-        Fd = [0,0,0]      # Drag (e.g. linear or quadratic)
-        Fc = [0,0,0]      # Coriolis & Centripetal    
-        Fact = [0,0,0]    # Actuators (fins, rudders, propellers)
-        Fdist = [0,0,0]   # Disturbance (e.g. noise or wind)
-        Fext = [0,0,0]    # External (e.g. contact)
+        Fd = np.array([0,0,0] )     # Drag (e.g. linear or quadratic)
+        Fc = np.array([0,0,0]  )    # Coriolis & Centripetal    
+        Fact = np.array([0,0,0] )   # Actuators (fins, rudders, propellers)
+        Fdist = np.array([0,0,0] )  # Disturbance (e.g. noise or wind)
+        Fext = np.array([0,0,0] )   # External (e.g. contact)
         
         Ftotal = Fd + Fc + Fact + Fdist + Fext
+        Mrb = np.array([[16.9,0,0],[0,16.9,0],[0,0,0.51]]) # Inertial matrix, rigid body
+        Ma =  np.array([[1.2,0,0],[0,49.2,0],[0,0,1.8]]) # Inertial matrix, hydrodynamic added mass
         
-        M = [[1,0,0],[0,1,0],[0,0,0.1]] # System inertia, including hydrodynamic added mass
+        M = Mrb + Ma
         
         # Accelleration
-        nu_dot = [0,0,0]
+        nu_dot = np.array([0,0,0])
         
         # Velocities
-        nu = [0,0,0]
+        nu = np.array([0,0,0])
         
         # Displacement
-        d_eta = [0,0,0]
+        d_eta = np.array([0,0,0])
         self.vessel.x[0:2] = self.vessel.x[0:2] + d_eta
         
             
@@ -155,6 +170,10 @@ def vesselModelRun():
         if reportStatusTimer.isready():  
             # Periodic reporting
             print('['+"{:.3f}".format(sim.runtimer.timeSinceStart())+'] '+sim.vessel.name+' sim seq='+"{:.0f}".format(sim.runtimer.sequence))
+            print(sim.vessel.thrustToForce[0](3800/60))
+            print(sim.vessel.thrustToForce[1](3800/60))
+            print(sim.vessel.thrustToForce[1](60))
+            print(sim.vessel.thrustToForce[2](1))
             
         rate.sleep()
 
