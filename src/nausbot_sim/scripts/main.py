@@ -10,6 +10,38 @@ import time
 import math
 from sensor_msgs.msg import NavSatFix 
 import numpy as np
+import sys
+import argparse
+
+VESSEL_ID = 'boaty1'
+RATE_PUB_HEADING = 16
+RATE_PUB_POS = 5
+RATE_SIM = 30
+
+parser = argparse.ArgumentParser()
+# forced argument
+parser.add_argument("vesselid", type=str,help="set vessel identifier")
+# optional arguments
+parser.add_argument("-rsim", "--ratesimulator", type=float,help="set rate of simulation")
+parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of heading publishing")
+parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
+
+args = parser.parse_args()
+
+
+
+#if args.vesselid:
+VESSEL_ID = args.vesselid
+
+if args.ratesimulator:
+    RATE_SIM = args.ratesimulator
+if args.rateheading:
+    RATE_PUB_HEADING = args.rateheading
+if args.rateposition:
+    RATE_PUB_POS = args.rateheading
+    
+
+print(VESSEL_ID+' '+str(RATE_SIM)+' '+str(RATE_PUB_HEADING)+' '+str(RATE_PUB_POS))
 
 class Vessel: 
     """
@@ -130,19 +162,19 @@ def actuationCallback(data,args):
     vessel.u = [msg.data[0],msg.data[1],msg.data[2],msg.data[3],msg.data[4]]
             
 def vesselModelRun():
-    posPubTimer = timedFncTracker(2)
-    headPubTimer = timedFncTracker(16)
+    posPubTimer = timedFncTracker(RATE_PUB_POS)
+    headPubTimer = timedFncTracker(RATE_PUB_HEADING)
     
     reportStatusTimer = timedFncTracker(0.5)
     
-    sim = vesselSim('Hum a Tuna',[52.1,4.37,math.pi/2,1,0,0],40)
+    sim = vesselSim(VESSEL_ID,[52.1,4.37,math.pi/2,1,0,0],RATE_SIM)
     
     posPub = rospy.Publisher(sim.vessel.name+'/geoPos_est',NavSatFix, queue_size=0)
     headPub = rospy.Publisher(sim.vessel.name+'/heading_est', Float32, queue_size=0)
     actSub = rospy.Subscriber(sim.vessel.name+'/u_ref', Float32MultiArray, actuationCallback,(sim.vessel))
     rospy.init_node(sim.vessel.name+'_python_motion_sim_geographical', anonymous=True)
     
-    rate = rospy.Rate(100) #hz
+    rate = rospy.Rate(1000) #hz
 
     while not rospy.is_shutdown():
         if sim.runtimer.isready():
@@ -182,8 +214,6 @@ if __name__ == '__main__':
         vesselModelRun()
     except rospy.ROSInterruptException:
         pass
-    
-
 
 """
 Ideas
