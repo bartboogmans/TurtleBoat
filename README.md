@@ -13,4 +13,5 @@ Evaluating kinetic energy in the simulator allows checking whether the undampene
 With dampening and external forces set to zero, this should remain constant. If it is not, errors expected due to: non infinitedecimal timestep (set simfrequency higher), rounding errors. 
 with a 2hz timestep this occasionally resulted in volatile simulation results (within 15 simulation seconds). Raising to 200hz solved this (almost no energy gain). 
 
+Kinetic energy is found as follows: (fossen2011)
 ![image](https://user-images.githubusercontent.com/5917472/203874598-a0b453d4-6fc5-474b-8f4d-48af5066ca89.png)
