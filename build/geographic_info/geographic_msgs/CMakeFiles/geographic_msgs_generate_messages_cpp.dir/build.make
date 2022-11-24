@@ -84,38 +84,38 @@ geographic_info/geographic_msgs/CMakeFiles/geographic_msgs_generate_messages_cpp
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMapChanges.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMap.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/WayPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/BoundingBox.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMap.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMapChanges.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating C++ code from geographic_msgs/GeographicMapChanges.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMapChanges.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMap.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/WayPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/BoundingBox.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeographicMap.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating C++ code from geographic_msgs/GeographicMap.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMap.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPath.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseStamped.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /opt/ros/noetic/share/geometry_msgs/msg/Quaternion.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPose.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /opt/ros/noetic/share/geometry_msgs/msg/Quaternion.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseStamped.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPath.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating C++ code from geographic_msgs/GeoPath.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPath.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
@@ -128,8 +128,8 @@ geographic_info/geographic_msgs/CMakeFiles/geographic_msgs_generate_messages_cpp
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPointStamped.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPointStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPointStamped.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPointStamped.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPointStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPointStamped.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPointStamped.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Generating C++ code from geographic_msgs/GeoPointStamped.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPointStamped.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
@@ -153,21 +153,21 @@ geographic_info/geographic_msgs/CMakeFiles/geographic_msgs_generate_messages_cpp
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseStamped.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseStamped.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseStamped.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseStamped.h: /opt/ros/noetic/share/geometry_msgs/msg/Quaternion.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPose.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseStamped.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseStamped.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Generating C++ code from geographic_msgs/GeoPoseStamped.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseStamped.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseWithCovarianceStamped.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseWithCovariance.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /opt/ros/noetic/share/geometry_msgs/msg/Quaternion.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPose.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /opt/ros/noetic/share/geometry_msgs/msg/Quaternion.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseWithCovariance.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GeoPoseWithCovarianceStamped.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Generating C++ code from geographic_msgs/GeoPoseWithCovarianceStamped.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseWithCovarianceStamped.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
@@ -180,20 +180,20 @@ geographic_info/geographic_msgs/CMakeFiles/geographic_msgs_generate_messages_cpp
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/MapFeature.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/MapFeature.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/MapFeature.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/MapFeature.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/MapFeature.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/MapFeature.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Generating C++ code from geographic_msgs/MapFeature.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/RouteNetwork.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/RouteSegment.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/WayPoint.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/RouteSegment.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/BoundingBox.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteNetwork.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Generating C++ code from geographic_msgs/RouteNetwork.msg"
@@ -201,17 +201,17 @@ geographic_info/geographic_msgs/CMakeFiles/geographic_msgs_generate_messages_cpp
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RoutePath.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RoutePath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/RoutePath.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RoutePath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RoutePath.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RoutePath.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RoutePath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RoutePath.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Generating C++ code from geographic_msgs/RoutePath.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/RoutePath.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteSegment.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteSegment.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/RouteSegment.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteSegment.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteSegment.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteSegment.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/RouteSegment.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Generating C++ code from geographic_msgs/RouteSegment.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/RouteSegment.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
@@ -219,22 +219,22 @@ geographic_info/geographic_msgs/CMakeFiles/geographic_msgs_generate_messages_cpp
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/WayPoint.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/WayPoint.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/WayPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/WayPoint.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/WayPoint.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/WayPoint.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/WayPoint.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/WayPoint.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Generating C++ code from geographic_msgs/WayPoint.msg"
 	cd /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs && /home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/WayPoint.msg -Igeographic_msgs:/home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Iuuid_msgs:/home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg -p geographic_msgs -o /home/bart/Documents/Nausbot/devel/include/geographic_msgs -e /opt/ros/noetic/share/gencpp/cmake/..
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/srv/GetGeographicMap.srv
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMap.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/WayPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/BoundingBox.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMap.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /opt/ros/noetic/share/gencpp/msg.h.template
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeographicMap.h: /opt/ros/noetic/share/gencpp/srv.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Generating C++ code from geographic_msgs/GetGeographicMap.srv"
@@ -242,13 +242,13 @@ geographic_info/geographic_msgs/CMakeFiles/geographic_msgs_generate_messages_cpp
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/srv/GetGeoPath.srv
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPath.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseStamped.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /opt/ros/noetic/share/geometry_msgs/msg/Quaternion.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPose.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /opt/ros/noetic/share/geometry_msgs/msg/Quaternion.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoseStamped.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPath.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /opt/ros/noetic/share/gencpp/msg.h.template
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetGeoPath.h: /opt/ros/noetic/share/gencpp/srv.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Generating C++ code from geographic_msgs/GetGeoPath.srv"
@@ -258,8 +258,8 @@ geographic_info/geographic_msgs/CMakeFiles/geographic_msgs_generate_messages_cpp
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetRoutePlan.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/srv/GetRoutePlan.srv
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetRoutePlan.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/RoutePath.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetRoutePlan.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetRoutePlan.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetRoutePlan.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetRoutePlan.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetRoutePlan.h: /opt/ros/noetic/share/gencpp/msg.h.template
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/GetRoutePlan.h: /opt/ros/noetic/share/gencpp/srv.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Generating C++ code from geographic_msgs/GetRoutePlan.srv"
@@ -267,15 +267,15 @@ geographic_info/geographic_msgs/CMakeFiles/geographic_msgs_generate_messages_cpp
 
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/srv/UpdateGeographicMap.srv
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMapChanges.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/KeyValue.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/unique_identifier/uuid_msgs/msg/UniqueID.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMapChanges.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMap.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
+/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeoPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/WayPoint.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/BoundingBox.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/MapFeature.msg
-/home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /home/bart/Documents/Nausbot/src/geographic_info/geographic_msgs/msg/GeographicMap.msg
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /opt/ros/noetic/share/gencpp/msg.h.template
 /home/bart/Documents/Nausbot/devel/include/geographic_msgs/UpdateGeographicMap.h: /opt/ros/noetic/share/gencpp/srv.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/bart/Documents/Nausbot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Generating C++ code from geographic_msgs/UpdateGeographicMap.srv"

@@ -56,3 +56,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/nausbot_sim" TYPE PROGRAM FILES "/home/bart/Documents/Nausbot/build/nausbot_sim/catkin_generated/installspace/main.py")
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/nausbot_sim" TYPE PROGRAM FILES "/home/bart/Documents/Nausbot/build/nausbot_sim/catkin_generated/installspace/tnmodel1.py")
+endif()
+

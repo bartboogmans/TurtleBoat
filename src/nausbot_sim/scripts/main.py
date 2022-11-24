@@ -10,29 +10,22 @@ import time
 import math
 from sensor_msgs.msg import NavSatFix 
 import numpy as np
-import sys
 import argparse
+import tnmodel1
 
-VESSEL_ID = 'boaty1'
 RATE_PUB_HEADING = 16
 RATE_PUB_POS = 5
 RATE_SIM = 30
 
+
+# Process function arguments
 parser = argparse.ArgumentParser()
-# forced argument
 parser.add_argument("vesselid", type=str,help="set vessel identifier")
-# optional arguments
 parser.add_argument("-rsim", "--ratesimulator", type=float,help="set rate of simulation")
 parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of heading publishing")
 parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
-
 args = parser.parse_args()
-
-
-
-#if args.vesselid:
 VESSEL_ID = args.vesselid
-
 if args.ratesimulator:
     RATE_SIM = args.ratesimulator
 if args.rateheading:
@@ -40,9 +33,6 @@ if args.rateheading:
 if args.rateposition:
     RATE_PUB_POS = args.rateheading
     
-
-print(VESSEL_ID+' '+str(RATE_SIM)+' '+str(RATE_PUB_HEADING)+' '+str(RATE_PUB_POS))
-
 class Vessel: 
     """
     Class to collect various ship related statusses
@@ -132,6 +122,12 @@ class vesselSim:
         self.vessel = TitoNeri(vesselname_,x0)
         self.runtimer = timedFncTracker(rate_)
         self.lastt = self.runtimer.tstart
+        
+        Mrb = np.array([[16.9,0,0],[0,16.9,0],[0,0,0.51]]) # Inertial matrix, rigid body
+        Ma =  np.array([[1.2,0,0],[0,49.2,0],[0,0,1.8]]) # Inertial matrix, hydrodynamic added mass
+        self.M = Mrb + Ma
+        
+        self.D = tnmodel1.dicks.giveme1
     def simstep(self,t):
         # Calculate forces and torques
         Fd = np.array([0,0,0] )     # Drag (e.g. linear or quadratic)
@@ -141,10 +137,6 @@ class vesselSim:
         Fext = np.array([0,0,0] )   # External (e.g. contact)
         
         Ftotal = Fd + Fc + Fact + Fdist + Fext
-        Mrb = np.array([[16.9,0,0],[0,16.9,0],[0,0,0.51]]) # Inertial matrix, rigid body
-        Ma =  np.array([[1.2,0,0],[0,49.2,0],[0,0,1.8]]) # Inertial matrix, hydrodynamic added mass
-        
-        M = Mrb + Ma
         
         # Accelleration
         nu_dot = np.array([0,0,0])

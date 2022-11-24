@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 def tn_aft_thrust(v):
     if v > 60:
         v = 60
