@@ -14,7 +14,7 @@ import argparse
 #import tnmodel1.tn_d_matrix
 RATE_PUB_HEADING = 16
 RATE_PUB_POS = 5
-RATE_SIM = 2
+RATE_SIM = 200
 
 R_EARTH = 6371000 #m
 
@@ -92,11 +92,11 @@ class TitoNeri(Vessel):
 
         ## Dynamics
         self.D = np.array([         [2.6416     ,0          ,0          ,0          ,0          ,0          ],
-                                    [0          ,21.9034    ,0          ,0          ,0          ,-1.0952     ],
+                                    [0          ,21.9034    ,0          ,0          ,0          ,-1.0952    ],
                                     [0          ,0          ,0          ,0          ,0          ,0          ],
                                     [0          ,0          ,0          ,0          ,0          ,0          ],
                                     [0          ,0          ,0          ,0          ,0          ,0          ],
-                                    [0          ,-1.0952     ,0          ,0          ,0          ,3.7096     ]])
+                                    [0          ,-1.0952    ,0          ,0          ,0          ,3.7096     ]])
 
         self.Mrb = np.array([       [16.9       ,0          ,0          ,0          ,0          ,0          ],
                                     [0          ,16.9       ,0          ,0          ,0          ,0          ],
@@ -106,15 +106,14 @@ class TitoNeri(Vessel):
                                     [0          ,0          ,0          ,0          ,0          ,0.51       ]])
 
         self.Ma = np.array([        [1.2        ,0          ,0          ,0          ,0          ,0          ],
-                                    #[0          ,49.2       ,0          ,0          ,0          ,0          ],
-                                    [0          ,5.2         ,0          ,0          ,0          ,0          ],
+                                    [0          ,49.2       ,0          ,0          ,0          ,0          ],
                                     [0          ,0          ,0          ,0          ,0          ,0          ],
                                     [0          ,0          ,0          ,0          ,0          ,0          ],
                                     [0          ,0          ,0          ,0          ,0          ,0          ],
                                     [0          ,0          ,0          ,0          ,0          ,1.8        ]])
         self.cg = np.array([0,0,0])
 
-        #self.M = self.Mrb + self.Ma
+        self.M = self.Mrb + self.Ma
 
     def getResultantThrust(self):
         return 1
@@ -242,61 +241,34 @@ class vesselSim:
         self.lastt = self.runtimer.tstart
         
     def simstep(self,t):
-        print('---------------------------------------START OF SIM STEP '+str(self.runtimer.sequence))
-        dt = 0.5#t - self.lastt
-        print('dt',dt)
-        print('prev self.vessel.vel',self.vessel.vel)
-
-        # Calculate forces and torques
-        #Fd = -1*np.matmul(self.vessel.D,self.vessel.vel)     # Drag (e.g. linear or quadratic)
-        Fc = -1*np.matmul(self.vessel.getCrb()+self.vessel.getCa(),self.vessel.vel)    # Coriolis & Centripetal
-        #Fca = -1*np.matmul(,self.vessel.vel)    # Coriolis & Centripetal
-        #Fact = np.array([1,0,0,0,0,0.1] )    # Actuators (fins, rudders, propellers)
-        #Fdist = np.array([0,0,0] )  # Disturbance (e.g. noise or wind)
-        #Fext = np.array([1,0,0,0,0,0.1] )   # External (e.g. contact)
+        dt = t - self.lastt
         
-        #fzero = np.array([0,0,0,0,0,0])
-
-        Ftotal = Fc#Fact #Fd #+ Fd #+ Fact #+ Fdist + Fext
-        #print('Fd Fc Fact')
-        #print(Fd)a
-        #print(self.vessel.vel)
-        #print(Fc)
-        #print(Fact)
+        # Calculate forces and torques
+        Fd = -1*np.matmul(self.vessel.D,self.vessel.vel)     # Drag (e.g. linear or quadratic)
+        Fc = -1*np.matmul(self.vessel.getCrb()+self.vessel.getCa(),self.vessel.vel)    # Coriolis & Centripetal
+        Fact = np.array([1,5.5,0,0,0,-0.00] )    # Actuators (fins, rudders, propellers)      
+        Ftotal = Fc + Fact + Fd
+        
         # Accelleration
-        nu_dot = np.matmul(np.linalg.inv(self.vessel.Mrb+self.vessel.Ma),Ftotal)
-        print('nu_dot: '+str(nu_dot))
+        nu_dot = np.matmul(np.linalg.inv(self.vessel.M),Ftotal)
+                
         # Velocities
-
         dvel = nu_dot*dt
         self.vessel.vel = self.vessel.vel + dvel
-        print('new self.vessel.vel',self.vessel.vel)
-        #print('dvel: ' +str(dvel))
-        #print('vel: '+str(self.vessel.vel))
         
         # Displacement
-        #print(
         d_eta = self.vessel.vel*np.array([dt])
-        print('d_eta',d_eta)
+        
         # Convert to North-east-down tangent displacements:
-        print('self.vessel.getRbn()',self.vessel.getRbn())
         dpos_tangent = np.matmul(self.vessel.getRbn(),d_eta[0:3])
 
-        print('dpos_tangent',dpos_tangent)
         # Conversion to geographical displacement
         dlat =np.rad2deg(np.arctan2(dpos_tangent[0],R_EARTH)) # degrees
         r_earth_at_lat = np.cos(np.deg2rad(self.vessel.pose[0]))*R_EARTH    # Radius of slice of earth at particular latitude
-        #print(r_earth_at_lat)
         dlong = np.rad2deg(np.arctan2(dpos_tangent[1],r_earth_at_lat))
-        #print(dlat)
-        #print(dlong)
-        #print('dlat/dlong =',dlat,dlong)
-        #self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
-        print('d_eta = ',d_eta[3],d_eta[4],d_eta[5])
         self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
-        
-        print('Heading='+str(self.vessel.pose[5])+ 'change this timestep='+str(d_eta[5]))
         self.lastt = t
+        #print("{:.3f}".format(t-self.runtimer.tstart), np.matmul(self.vessel.vel,np.matmul(self.vessel.M,self.vessel.vel)))
             
 def actuationCallback(data,args):
     vessel = args[0]
@@ -334,7 +306,7 @@ def vesselModelRun():
             
             msg.latitude = sim.vessel.pose[0]
             msg.longitude = sim.vessel.pose[1]
-            msg.altitude = sim.vessel.pose[2]#float("nan")
+            msg.altitude = sim.vessel.pose[2]
             posPub.publish(msg)
         
         if headPubTimer.isready():
