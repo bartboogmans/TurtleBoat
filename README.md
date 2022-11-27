@@ -25,7 +25,8 @@ rosrun nausbot main.py titoneri1 --velocity0 0.3 0 0 0 0 0.05
 A 6DOF state space model has been used to simulate motion, although for the example Tito-Neri vessel line only surface level dynamics are taken into account, although the framework supports full motion.
 
 ### Coriolis & centripetal forces
-Parameterization of C matrices is done according to eq3.46 from "HANDBOOK OF MARINE CRAFT HYDRODYNAMICS AND MOTION CONTROL" 2011 by Fossen.
+Parameterization of C matrices is done according to eq3.46 from "Handbook of marine craft hydrodynamics and motion control" 2011 by Fossen.
+
 ![image](https://user-images.githubusercontent.com/5917472/204147704-3c106978-ce6e-48eb-8dc7-0a3f0bdb95ef.png)
 
 Evaluating kinetic energy in the simulator allows checking whether the undampened system is conservative (which it should be)
