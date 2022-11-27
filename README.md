@@ -3,7 +3,7 @@ Software-in-the-loop-simulator emulating a robotic ship on a ROS network
 
 Initial developer: Bart Boogmans (bartboogmans@hotmail.com)
  
-Initial parameters of the Tito-Neri vessel line are obtained though the publication:
+Default dynamics represent a Tito Neri model scale vessel. Initial parameters of the Tito-Neri vessel line are obtained though the publication:
  "Model predictive maneuvering control and energy management for all-electric autonomous ships" https://www.sciencedirect.com/science/article/pii/S0306261919309705
  
 Missing parameters (such as dampening coefficients & non diagonal components of the inertial matrices) were estimated using linearization in characteristic working points or free-body-diagram supported estimates. The values are assumed to be quite reasonable, although a difference between simulation and reality is unavoidable. The signs and general behaviour of the ship dynamics which are herein presented should however give a good feel of how these vessels respond, allowing coarse tests of control algorythms and learning to interact with vessel control systems over ROS.
