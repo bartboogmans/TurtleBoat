@@ -1,0 +1,8 @@
+prefix=/home/bart/Documents/Nausbot/devel
+
+Name: nausbot
+Description: Description of nausbot
+Version: 0.0.1
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

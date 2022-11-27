@@ -1,8 +1,0 @@
-prefix=/home/bart/Documents/Nausbot/devel
-
-Name: unique_id
-Description: Description of unique_id
-Version: 1.0.6
-Cflags: -I/home/bart/Documents/Nausbot/src/unique_identifier/unique_id/include -I/usr/include
-Libs: -L${prefix}/lib 
-Requires: uuid_msgs

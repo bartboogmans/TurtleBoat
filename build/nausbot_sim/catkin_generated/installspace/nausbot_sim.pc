@@ -1,8 +1,0 @@
-prefix=/home/bart/Documents/Nausbot/install
-
-Name: nausbot_sim
-Description: Description of nausbot_sim
-Version: 0.0.1
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

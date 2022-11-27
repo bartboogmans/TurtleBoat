@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+def tn_aft_thrust(v):
+    if v > 60:
+        v = 60
+    elif v<-60:
+        v = -60
+
+    return -1
+
+def sayHi():
+    return 'hi'
+
+def tn_bow_thrust(pwm):
+    # Limit thrust to maxima:
+    if pwm >1:
+        pwm = 1
+    elif pwm < -1:
+        pwm = -1
+    # Return the resultant thrust in Newtons [N]
+    # the value
+    return pwm*3.575
+
+
+def tn_d_matrix():
+    return np.array([   [2.6416  ,0          ,0      ],
+                        [0      ,21.9034     ,1.0952 ],
+                        [0      ,1.0952      ,3.7096  ]])
+class dicks:
+    def __init__(self):
+        self.a = 1
+    def givemeone(self):
+        return 1
+    
+def tn_m_matrix():
+    mrb = np.array([    [1          ,0          ,0 ],
+                        [0          ,1          ,0 ],
+                        [0          ,0          ,1 ]])
+    ma =  np.array([    [1          ,0          ,0 ],
+                        [0          ,1          ,0 ],
+                        [0          ,0          ,1 ]])
+    return mrb+ma

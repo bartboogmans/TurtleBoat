@@ -1,2 +1,2 @@
-geographic_info/geodesy:geographic_info/geographic_info:geographic_info/geographic_msgs:geonav_transform:nausbot_sim:unique_identifier/unique_id:unique_identifier/unique_identifier:unique_identifier/uuid_msgs
+nausbot
 -DCATKIN_DEVEL_PREFIX=/home/bart/Documents/Nausbot/devel -DCMAKE_INSTALL_PREFIX=/home/bart/Documents/Nausbot/install -G Unix Makefiles

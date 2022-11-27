@@ -131,14 +131,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/bart/Documents/Nausbot/build/gtest/cmake_install.cmake")
-  include("/home/bart/Documents/Nausbot/build/geographic_info/geographic_info/cmake_install.cmake")
-  include("/home/bart/Documents/Nausbot/build/unique_identifier/unique_identifier/cmake_install.cmake")
-  include("/home/bart/Documents/Nausbot/build/unique_identifier/uuid_msgs/cmake_install.cmake")
-  include("/home/bart/Documents/Nausbot/build/geographic_info/geographic_msgs/cmake_install.cmake")
-  include("/home/bart/Documents/Nausbot/build/geonav_transform/cmake_install.cmake")
-  include("/home/bart/Documents/Nausbot/build/nausbot_sim/cmake_install.cmake")
-  include("/home/bart/Documents/Nausbot/build/unique_identifier/unique_id/cmake_install.cmake")
-  include("/home/bart/Documents/Nausbot/build/geographic_info/geodesy/cmake_install.cmake")
+  include("/home/bart/Documents/Nausbot/build/nausbot/cmake_install.cmake")
 
 endif()
 
