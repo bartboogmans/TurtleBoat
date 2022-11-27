@@ -4,7 +4,7 @@ Initial developer: Bart Boogmans (bartboogmans@hotmail.com)
 
 Use: 
  Install ROS & Setup Environment
- >> rosrun nausbot main.py vessel1name <optional parameters>
+rosrun nausbot main.py vessel1name <optional parameters>
  
 Initial parameters of the Tito-Neri vessel line are obtained though the publication:
  "Model predictive maneuvering control and energy management for all-electric autonomous ships" https://www.sciencedirect.com/science/article/pii/S0306261919309705
