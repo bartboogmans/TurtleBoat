@@ -9,7 +9,7 @@ Missing parameters (such as dampening coefficients) were estimated using rules o
 
 Notice:
 This work can be copied, changed and redistributed as long as documentation remains clear on contributions of origonal contributors. 
-This work can be used to generate content (such as: datasets, figures, model-parameters) for publications (including education deliverables such as msc thesis) given that explicit recognition has been given on the use of this tool in the derived work.
+This work can be used to generate content (such as: datasets, figures, model-parameters) for publications (including education deliverables such as msc thesis) given that explicit recognition has been given how this tool and by that the developers contributed to the content. 
 
 ## Use:
 After installing ROS, cloning this repo & setting ROS environment variables:
