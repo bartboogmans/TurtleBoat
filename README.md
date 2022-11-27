@@ -1,5 +1,6 @@
 # Nausbot
 Ship simulator / software-in-the-loop-system that listens to actuation and outputs simulated ship response.
+
 Initial developer: Bart Boogmans (bartboogmans@hotmail.com)
  
 Initial parameters of the Tito-Neri vessel line are obtained though the publication:
