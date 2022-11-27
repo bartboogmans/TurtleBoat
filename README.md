@@ -1,5 +1,5 @@
 # Nausbot
-Ship simulator / software-in-the-loop-system that listens to actuation and outputs simulated ship response.
+Software-in-the-loop-simulator emulating a robotic ship on a ROS network
 
 Initial developer: Bart Boogmans (bartboogmans@hotmail.com)
  
