@@ -29,7 +29,7 @@ Parameterization of C matrices is done according to eq3.46 from "Handbook of mar
 
 ![image](https://user-images.githubusercontent.com/5917472/204147704-3c106978-ce6e-48eb-8dc7-0a3f0bdb95ef.png)
 
-Evaluating kinetic energy in the simulator allows checking whether the undampened system is conservative (which it should be)
-
-With dampening and external forces set to zero, this should remain constant. If it is not, errors expected due to: non infinitedecimal timestep (set simfrequency higher), rounding errors. 
-with a 2hz timestep this occasionally resulted in volatile simulation results (within 15 simulation seconds). Raising to 200hz solved this (almost no energy gain). 
+### Simulation rates
+Rates of publishing position & heading and doing simulation steps can be individually configured. Increased simulation rate positively affects accuracy of the model, where significant errors were observed at 2hz and neglectible at 200hz, where the latter did not prove computationally challenging for a common pc, and is thus recommended.
+Evaluating kinetic energy in the simulator allows checking whether the undampened system is conservative. With dampening and external forces set to zero, this should remain constant. If it is not, errors expected due to: non infinitedecimal timestep (set simfrequency higher), rounding errors. 
+with a 2hz timestep this occasionally resulted in volatile (unstable due to positive feedback) simulation results (within 15 simulation seconds). Raising to 200hz solved this (increase of potential was still there but orders of magnitude lower than dampening effects). 
