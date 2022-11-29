@@ -28,8 +28,9 @@ A 6DOF state space model has been used to simulate motion, although for the exam
 Parameterization of C matrices is done according to eq3.46 from "Handbook of marine craft hydrodynamics and motion control" 2011 by Fossen.
 
 ```math
-C(ν) = \begin{bmatrix} 0_{3x3} & -S(A_{11}ν_1 + A_{12}ν_2) \\ -S(A_{11}ν_1 + A_{12}ν_2) & -S(A_{21}ν_1 + A_{22}ν_2) \end{bmatrix} 
+C(ν) = \begin{bmatrix} 0_{3x3} & -S(M_{11}ν_1 + M_{12}ν_2) \\ -S(M_{11}ν_1 + M_{12}ν_2) & -S(M_{21}ν_1 + M_{22}ν_2) \end{bmatrix} 
 ```
+with similar shape for added mass contributions
 
 ### Simulation rates
 Rates of publishing position & heading and doing simulation steps can be individually configured. Increased simulation rate positively affects accuracy of the model, where significant errors were observed at 2hz and neglectible at 200hz, where the latter did not prove computationally challenging for a common pc, and is thus recommended.
