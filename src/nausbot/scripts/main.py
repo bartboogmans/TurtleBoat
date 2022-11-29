@@ -320,11 +320,11 @@ class vesselSim:
         self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
         self.lastt = t
             
-def actuationCallback(data,args):
+def actuationCallback(msg,args):
     """
     Sets tito neri actuation from respective ros topic
     """
-    vessel = args[0]
+    vessel = args
     vessel.u = np.array([msg.data[0],msg.data[1],msg.data[2]])
     vessel.alpha = np.array([msg.data[3],msg.data[4],math.pi/2])
     
