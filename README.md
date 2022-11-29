@@ -29,8 +29,7 @@ Parameterization of C matrices is done according to eq3.46 from "Handbook of mar
 
 ![image](https://user-images.githubusercontent.com/5917472/204147704-3c106978-ce6e-48eb-8dc7-0a3f0bdb95ef.png)
 ```math
-\begin{bmatrix} 0_{3x3} & -S(A_{11}
-nu_1 +A_{12}v_2) \\ b_1 & b_2  \end{bmatrix} 
+\begin{bmatrix} 0_{3x3} & -S(A_{11}ν_1 + A_{12}ν_2) \\ -S(A_{11}ν_1 + A_{12}ν_2) & -S(A_{21}ν_1 + A_{22}ν_2) \end{bmatrix} 
 ```
 
 ### Simulation rates
