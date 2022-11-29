@@ -33,6 +33,6 @@ Parameterization of C matrices is done according to eq3.46 from "Handbook of mar
 Rates of publishing position & heading and doing simulation steps can be individually configured. Increased simulation rate positively affects accuracy of the model, where significant errors were observed at 2hz and neglectible at 200hz, where the latter did not prove computationally challenging for a common pc, and is thus recommended.
 Evaluating kinetic energy (Kirchhoff's equations of energy, 1869, or Fossen's handbook of marine craft hydrodynamics eq 6.34 ) (T = 1/2 v'Mv) in the simulator allows checking whether the undampened system is conservative. With dampening and external forces set to zero, this should remain constant. If it is not, errors expected due to: non infinitedecimal timestep (set simfrequency higher), rounding errors. 
 
-$$ T = {1 \over 2} {-v'Mv } $$
+$$ T = {1 \over 2} {v^TMv } $$
 
 with a 2hz timestep this occasionally resulted in volatile (unstable due to positive feedback) simulation results (within 15 simulation seconds). Raising to 200hz solved this (increase of potential was still there but orders of magnitude lower than dampening effects). 
