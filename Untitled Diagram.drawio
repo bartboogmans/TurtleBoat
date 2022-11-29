@@ -1,1 +1,39 @@
-<mxfile host="app.diagrams.net" modified="2022-11-29T17:29:41.245Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" version="20.5.1" etag="R0X8v2As7bFVZm-XlBNU" type="github"><diagram id="0OexO2IGbUicg3op_Psr">UzV2zq1wL0osyPDNT0nNUTV2VTV2LsrPL4GwciucU3NyVI0MMlNUjV1UjYwMgFjVyA2HrCFY1qAgsSg1rwSLBiADYTaQg2Y1AA==</diagram></mxfile>
+<mxfile host="app.diagrams.net" modified="2022-11-29T17:35:27.470Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" etag="mP-XxUvTegfJhSLtfFEx" version="20.5.1" type="github">
+  <diagram id="0OexO2IGbUicg3op_Psr" name="Page-1">
+    <mxGraphModel dx="813" dy="422" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="hIB8pztjtULYRo2MexRl-7" value="System response&lt;br&gt;&lt;br&gt;e.g. &lt;br&gt;Position:&lt;br&gt;sensor_msgs/NavSatFix&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;Heading:&lt;br&gt;std_msgs/Float32&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="529.9990476190476" y="319.76" as="geometry" />
+        </mxCell>
+        <mxCell id="hIB8pztjtULYRo2MexRl-1" value="Vessel Simulator" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="280" width="130" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="hIB8pztjtULYRo2MexRl-3" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="hIB8pztjtULYRo2MexRl-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="340" as="sourcePoint" />
+            <mxPoint x="250" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hIB8pztjtULYRo2MexRl-6" value="Ship input&lt;br&gt;&lt;br&gt;e.g.&amp;nbsp;&lt;br&gt;reference actuation:&lt;br&gt;&amp;nbsp;std_msgs/Float32MultiArray" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="hIB8pztjtULYRo2MexRl-3">
+          <mxGeometry x="-0.153" relative="1" as="geometry">
+            <mxPoint x="2" y="-40" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hIB8pztjtULYRo2MexRl-4" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="450" y="299.76" as="sourcePoint" />
+            <mxPoint x="610.0000000000001" y="299.76" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hIB8pztjtULYRo2MexRl-5" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="450" y="379.76" as="sourcePoint" />
+            <mxPoint x="610.0000000000001" y="379.76" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
