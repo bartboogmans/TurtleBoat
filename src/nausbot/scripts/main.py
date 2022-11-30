@@ -46,6 +46,8 @@ parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of posi
 args = parser.parse_args()
 VESSEL_ID = args.vesselid
 
+ERRTRACKER1 = 0
+
 if args.ratesimulator:
     RATE_SIM = args.ratesimulator
 if args.rateheading:
@@ -288,10 +290,11 @@ class vesselSim:
         self.vessel = TitoNeri(vesselname_,pose0_,vel0_)
         self.runtimer = timedFncTracker(rate_)
         self.lastt = self.runtimer.tstart
+        self.ERRTRACKER1 = 0
         
     def simstep(self,t):
         dt = t - self.lastt
-        
+
         # Calculate forces and torques
         Fd = -1*np.matmul(self.vessel.D,self.vessel.vel)     # Drag (e.g. linear or quadratic)
         Fc = -1*np.matmul(self.vessel.getCrb()+self.vessel.getCa(),self.vessel.vel)    # Coriolis & Centripetal
@@ -319,7 +322,40 @@ class vesselSim:
         # Set new position (long (deg) ,lat (deg) ,altitude (m) ,roll (rad) ,pitch (rad) ,yaw (rad))
         self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
         self.lastt = t
-            
+
+        self.errortrackerFnc1(nu_dot,Ftotal,dt,Fd,Fc,Fact)
+
+    def errortrackerFnc1(self,nu_dot,Ftotal,dt,Fd,Fc,Fact):
+        if (self.vessel.vel[5] >100) or (self.vessel.vel[0] <-100):
+            if self.ERRTRACKER1 ==0:
+                self.ERRTRACKER1=1
+                print('------------',self.ERRTRACKER1,'------------')
+                print('vesselpose=',self.vessel.pose)
+                print(' vesselvel=',self.vessel.vel)
+                print(' nu_dot=',nu_dot)
+                print(' Ftotal=',Ftotal)
+                print(' Fd=',Fd)
+                print(' Fc=',Fc)
+                print(' Fact=',Fact)
+                print(' dt=',dt)
+            elif self.ERRTRACKER1 ==1:
+                self.ERRTRACKER1=2
+                print('------------',self.ERRTRACKER1,'------------')
+                print('vesselpose=',self.vessel.pose)
+                print(' vesselvel=',self.vessel.vel)
+                print(' nu_dot=',nu_dot)
+                print(' Ftotal=',Ftotal)
+                print(' dt=',dt)
+            elif self.ERRTRACKER1 ==2:
+                self.ERRTRACKER1=3
+                print('------------',self.ERRTRACKER1,'------------')
+                print('vesselpose=',self.vessel.pose)
+                print(' vesselvel=',self.vessel.vel)
+                print(' nu_dot=',nu_dot)
+                print(' Ftotal=',Ftotal)
+                print(' dt=',dt)
+
+
 def actuationCallback(msg,args):
     """
     Sets tito neri actuation from respective ros topic
@@ -373,6 +409,7 @@ def vesselModelRun():
         if headPubTimer.isready():
             # Publish heading
             msg = Float32()
+            print(sim.vessel.pose[5])
             msg.data =  sim.vessel.pose[5]
             headPub.publish(msg)
 
