@@ -285,37 +285,40 @@ class vesselSim:
         self.ERRTRACKER1 = 0
         
     def simstep(self,t):
-        dt = t - self.lastt
+        if self.initializing:
+            self.lastt = time.time()
+            self.initializing = 0
+        else:
+            dt = t - self.lastt
 
-        # Calculate forces and torques
-        Fd = -1*np.matmul(self.vessel.D,self.vessel.vel)     # Drag (e.g. linear or quadratic)
-        Fc = -1*np.matmul(self.vessel.getCrb()+self.vessel.getCa(),self.vessel.vel)    # Coriolis & Centripetal
-        Fact = self.vessel.calc_f_act() # Actuators (fins, rudders, propellers)   
-        Ftotal = Fd + Fc + Fact
-        
-        # Accelleration
-        nu_dot = np.matmul(np.linalg.inv(self.vessel.M),Ftotal)
-                
-        # Velocities
-        dvel = nu_dot*dt
-        self.vessel.vel = self.vessel.vel + dvel
-        
-        # Displacement  (cartesian body fixed coordinate system)
-        d_eta = self.vessel.vel*np.array([dt]) 
-        
-        # Convert to North-east-down tangent displacements: (cartesian local coordinate system)
-        dpos_tangent = np.matmul(self.vessel.getRbn(),d_eta[0:3])
+            # Calculate forces and torques
+            Fd = -1*np.matmul(self.vessel.D,self.vessel.vel)     # Drag (e.g. linear or quadratic)
+            Fc = -1*np.matmul(self.vessel.getCrb()+self.vessel.getCa(),self.vessel.vel)    # Coriolis & Centripetal
+            Fact = self.vessel.calc_f_act() # Actuators (fins, rudders, propellers)
+            Ftotal = Fd + Fc + Fact
 
-        # Conversion to geographical displacement (geographical global coordinate system)
-        dlat =np.rad2deg(np.arctan2(dpos_tangent[0],R_EARTH)) # degrees
-        r_earth_at_lat = np.cos(np.deg2rad(self.vessel.pose[0]))*R_EARTH    # Radius of slice of earth at particular latitude
-        dlong = np.rad2deg(np.arctan2(dpos_tangent[1],r_earth_at_lat))
-        
-        # Set new position (long (deg) ,lat (deg) ,altitude (m) ,roll (rad) ,pitch (rad) ,yaw (rad))
-        self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
-        self.lastt = t
+            # Accelleration
+            nu_dot = np.matmul(np.linalg.inv(self.vessel.M),Ftotal)
 
-        self.errortrackerFnc1(nu_dot,Ftotal,dt,Fd,Fc,Fact)
+            # Velocities
+            dvel = nu_dot*dt
+            self.vessel.vel = self.vessel.vel + dvel
+
+            # Displacement  (cartesian body fixed coordinate system)
+            d_eta = self.vessel.vel*np.array([dt])
+
+            # Convert to North-east-down tangent displacements: (cartesian local coordinate system)
+            dpos_tangent = np.matmul(self.vessel.getRbn(),d_eta[0:3])
+
+            # Conversion to geographical displacement (geographical global coordinate system)
+            dlat =np.rad2deg(np.arctan2(dpos_tangent[0],R_EARTH)) # degrees
+            r_earth_at_lat = np.cos(np.deg2rad(self.vessel.pose[0]))*R_EARTH    # Radius of slice of earth at particular latitude
+            dlong = np.rad2deg(np.arctan2(dpos_tangent[1],r_earth_at_lat))
+
+            # Set new position (long (deg) ,lat (deg) ,altitude (m) ,roll (rad) ,pitch (rad) ,yaw (rad))
+            self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
+            self.lastt = t
+
 
 
 def actuationCallback(msg,args):
