@@ -154,20 +154,12 @@ class TitoNeri(Vessel):
         :param: none
         :return: resultant force/torque vector
         """
-        
         Fres = np.array([0,0,0,0,0,0])
-        
         for nthr in range(self.ntrh):
-            #print('nthr',nthr)
-            #print('self.thrustToForce[nthr](self.u[nthr])',self.thrustToForce[nthr](self.u[nthr]))
             Fthr_i_thrLocal = np.array([self.get_f_thr(nthr),0,0])
             Fthr_i_body = np.matmul(R6_b_to_n(0,0,self.alpha[nthr]),Fthr_i_thrLocal)
-            #print('Fthr_i_thrLocal',Fthr_i_thrLocal)
-            #print('Fthr_i_body',Fthr_i_body)
             mi = np.cross(self.r_thruster[nthr],Fthr_i_body)
-            #print('mi',mi)
             Fres = Fres + np.array([Fthr_i_body[0],Fthr_i_body[1],Fthr_i_body[2],mi[0],mi[1],mi[2]])
-            #print('Fres',Fres)
         return Fres
     
     def get_f_thr(self,n):
@@ -181,7 +173,6 @@ class TitoNeri(Vessel):
             u = self.actLims[0][0]
         elif u > self.actLims[0][1]:
             u = self.actLims[0][1]
-        
         return self.thrustToForce[n](u)
     
     def set_u(self):
@@ -325,36 +316,6 @@ class vesselSim:
         self.lastt = t
 
         self.errortrackerFnc1(nu_dot,Ftotal,dt,Fd,Fc,Fact)
-
-    def errortrackerFnc1(self,nu_dot,Ftotal,dt,Fd,Fc,Fact):
-        if (self.vessel.vel[5] >100) or (self.vessel.vel[0] <-100):
-            if self.ERRTRACKER1 ==0:
-                self.ERRTRACKER1=1
-                print('------------',self.ERRTRACKER1,'------------')
-                print('vesselpose=',self.vessel.pose)
-                print(' vesselvel=',self.vessel.vel)
-                print(' nu_dot=',nu_dot)
-                print(' Ftotal=',Ftotal)
-                print(' Fd=',Fd)
-                print(' Fc=',Fc)
-                print(' Fact=',Fact)
-                print(' dt=',dt)
-            elif self.ERRTRACKER1 ==1:
-                self.ERRTRACKER1=2
-                print('------------',self.ERRTRACKER1,'------------')
-                print('vesselpose=',self.vessel.pose)
-                print(' vesselvel=',self.vessel.vel)
-                print(' nu_dot=',nu_dot)
-                print(' Ftotal=',Ftotal)
-                print(' dt=',dt)
-            elif self.ERRTRACKER1 ==2:
-                self.ERRTRACKER1=3
-                print('------------',self.ERRTRACKER1,'------------')
-                print('vesselpose=',self.vessel.pose)
-                print(' vesselvel=',self.vessel.vel)
-                print(' nu_dot=',nu_dot)
-                print(' Ftotal=',Ftotal)
-                print(' dt=',dt)
 
 
 def actuationCallback(msg,args):
