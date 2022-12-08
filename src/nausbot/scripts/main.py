@@ -332,6 +332,7 @@ class vesselSim:
         elif self.vessel.pose[0] <0:
             self.vessel.pose[0] += 2*math.pi
 
+class eventlogger:
     """ Logs simulation step events in matrices for debugging and display.
     :param:
     :return: the created object
