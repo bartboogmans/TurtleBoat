@@ -323,7 +323,7 @@ def actuationCallback(msg,args):
     Sets tito neri actuation from respective ros topic
     """
     vessel = args
-    vessel.u = np.array([msg.data[0],msg.data[1],msg.data[2]])
+    vessel.u = np.array([msg.data[0]/60,msg.data[1]/60,msg.data[2]])
     vessel.alpha = np.array([msg.data[3],msg.data[4],math.pi/2])
     
     
