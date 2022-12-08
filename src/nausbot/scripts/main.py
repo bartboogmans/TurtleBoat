@@ -111,7 +111,7 @@ class TitoNeri(Vessel):
         self.actLims = np.array([[-60,60],[-60,60],[-1,1]]) # lower and upper bounds of all actuators
         self.u = [0,0,0] # initial actuator output
         self.alpha = [-math.pi/6,0,math.pi/2] # initial actuator orientation
-        self.r_thruster = np.array([[-0.42,-0.08,0],[-0.42,+0.08,0],[-0.28,-0.00,0]])
+        self.r_thruster = np.array([[-0.42,-0.08,0],[-0.42,+0.08,0],[0.28,0.00,0]])
         
         # Size
         self.l = 0.97
