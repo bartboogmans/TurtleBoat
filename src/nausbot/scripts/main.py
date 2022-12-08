@@ -282,6 +282,7 @@ class vesselSim:
         self.vessel = TitoNeri(vesselname_,pose0_,vel0_)
         self.runtimer = timedFncTracker(rate_)
         self.lastt = self.runtimer.tstart
+        self.initializing = 1
         self.ERRTRACKER1 = 0
         
     def simstep(self,t):
