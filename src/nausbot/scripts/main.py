@@ -28,6 +28,7 @@ import math
 from sensor_msgs.msg import NavSatFix 
 import numpy as np
 import argparse
+import matplotlib.pyplot as plt
 
 RATE_PUB_HEADING = 16
 RATE_PUB_POS = 5
@@ -45,6 +46,8 @@ parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of head
 parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
 args = parser.parse_args()
 VESSEL_ID = args.vesselid
+
+ERRTRACKER1 = 0
 
 if args.ratesimulator:
     RATE_SIM = args.ratesimulator
@@ -109,7 +112,7 @@ class TitoNeri(Vessel):
         self.actLims = np.array([[-60,60],[-60,60],[-1,1]]) # lower and upper bounds of all actuators
         self.u = [0,0,0] # initial actuator output
         self.alpha = [-math.pi/6,0,math.pi/2] # initial actuator orientation
-        self.r_thruster = np.array([[-0.42,-0.08,0],[-0.42,+0.08,0],[-0.28,-0.00,0]])
+        self.r_thruster = np.array([[-0.42,-0.08,0],[-0.42,+0.08,0],[0.28,0.00,0]])
         
         # Size
         self.l = 0.97
@@ -136,7 +139,8 @@ class TitoNeri(Vessel):
         # Note that the current diagonals on inertia in pitch and roll direction are 1. These values are not measured or taken up in the current model, but these points have to be nonzero to make this matrix invertible. 
 
         self.Ma = np.array([        [1.2        ,0          ,0          ,0          ,0          ,0          ],
-                                    [0          ,49.2       ,0          ,0          ,0          ,0          ],
+                                    [0          ,1.2        ,0          ,0          ,0          ,0          ],
+                                    #[0          ,49.2       ,0          ,0          ,0          ,0          ],
                                     [0          ,0          ,0          ,0          ,0          ,0          ],
                                     [0          ,0          ,0          ,0          ,0          ,0          ],
                                     [0          ,0          ,0          ,0          ,0          ,0          ],
@@ -151,20 +155,12 @@ class TitoNeri(Vessel):
         :param: none
         :return: resultant force/torque vector
         """
-        
         Fres = np.array([0,0,0,0,0,0])
-        
         for nthr in range(self.ntrh):
-            #print('nthr',nthr)
-            #print('self.thrustToForce[nthr](self.u[nthr])',self.thrustToForce[nthr](self.u[nthr]))
             Fthr_i_thrLocal = np.array([self.get_f_thr(nthr),0,0])
             Fthr_i_body = np.matmul(R6_b_to_n(0,0,self.alpha[nthr]),Fthr_i_thrLocal)
-            #print('Fthr_i_thrLocal',Fthr_i_thrLocal)
-            #print('Fthr_i_body',Fthr_i_body)
             mi = np.cross(self.r_thruster[nthr],Fthr_i_body)
-            #print('mi',mi)
             Fres = Fres + np.array([Fthr_i_body[0],Fthr_i_body[1],Fthr_i_body[2],mi[0],mi[1],mi[2]])
-            #print('Fres',Fres)
         return Fres
     
     def get_f_thr(self,n):
@@ -178,7 +174,6 @@ class TitoNeri(Vessel):
             u = self.actLims[0][0]
         elif u > self.actLims[0][1]:
             u = self.actLims[0][1]
-        
         return self.thrustToForce[n](u)
     
     def set_u(self):
@@ -288,44 +283,145 @@ class vesselSim:
         self.vessel = TitoNeri(vesselname_,pose0_,vel0_)
         self.runtimer = timedFncTracker(rate_)
         self.lastt = self.runtimer.tstart
+        self.initializing = 1
+        self.ERRTRACKER1 = 0
+        self.el = eventlogger(1000,30,self.lastt)
+
         
     def simstep(self,t):
-        dt = t - self.lastt
-        
-        # Calculate forces and torques
-        Fd = -1*np.matmul(self.vessel.D,self.vessel.vel)     # Drag (e.g. linear or quadratic)
-        Fc = -1*np.matmul(self.vessel.getCrb()+self.vessel.getCa(),self.vessel.vel)    # Coriolis & Centripetal
-        Fact = self.vessel.calc_f_act() # Actuators (fins, rudders, propellers)   
-        Ftotal = Fd + Fc + Fact
-        
-        # Accelleration
-        nu_dot = np.matmul(np.linalg.inv(self.vessel.M),Ftotal)
-                
-        # Velocities
-        dvel = nu_dot*dt
-        self.vessel.vel = self.vessel.vel + dvel
-        
-        # Displacement  (cartesian body fixed coordinate system)
-        d_eta = self.vessel.vel*np.array([dt]) 
-        
-        # Convert to North-east-down tangent displacements: (cartesian local coordinate system)
-        dpos_tangent = np.matmul(self.vessel.getRbn(),d_eta[0:3])
+        if self.initializing:
+            self.lastt = time.time()
+            self.initializing = 0
+        else:
+            dt = t - self.lastt
 
-        # Conversion to geographical displacement (geographical global coordinate system)
-        dlat =np.rad2deg(np.arctan2(dpos_tangent[0],R_EARTH)) # degrees
-        r_earth_at_lat = np.cos(np.deg2rad(self.vessel.pose[0]))*R_EARTH    # Radius of slice of earth at particular latitude
-        dlong = np.rad2deg(np.arctan2(dpos_tangent[1],r_earth_at_lat))
-        
-        # Set new position (long (deg) ,lat (deg) ,altitude (m) ,roll (rad) ,pitch (rad) ,yaw (rad))
-        self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
-        self.lastt = t
-            
+            # Calculate forces and torques
+            Fd = -1*np.matmul(self.vessel.D,self.vessel.vel)     # Drag (e.g. linear or quadratic)
+            Fc = -1*np.matmul(self.vessel.getCrb()+self.vessel.getCa(),self.vessel.vel)    # Coriolis & Centripetal
+            Fact = self.vessel.calc_f_act() # Actuators (fins, rudders, propellers)
+            Ftotal = Fd + Fc + Fact
+
+            # Accelleration
+            nu_dot = np.matmul(np.linalg.inv(self.vessel.M),Ftotal)
+
+            # Velocities
+            dvel = nu_dot*dt
+            self.vessel.vel = self.vessel.vel + dvel
+
+            # Displacement  (cartesian body fixed coordinate system)
+            d_eta = self.vessel.vel*np.array([dt])
+
+            # Convert to North-east-down tangent displacements: (cartesian local coordinate system)
+            dpos_tangent = np.matmul(self.vessel.getRbn(),d_eta[0:3])
+
+            # Conversion to geographical displacement (geographical global coordinate system)
+            dlat =np.rad2deg(np.arctan2(dpos_tangent[0],R_EARTH)) # degrees
+            r_earth_at_lat = np.cos(np.deg2rad(self.vessel.pose[0]))*R_EARTH    # Radius of slice of earth at particular latitude
+            dlong = np.rad2deg(np.arctan2(dpos_tangent[1],r_earth_at_lat))
+
+            # Set new position (long (deg) ,lat (deg) ,altitude (m) ,roll (rad) ,pitch (rad) ,yaw (rad))
+            self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
+            self.lastt = t
+            self.bound_coordinate_limits()
+
+            #self.el.log(t,nu_dot,self.vessel.vel,self.vessel.pose,Ftotal,Fd,Fc,Fact,dt,self.vessel.u,self.vessel.alpha)
+
+    def bound_coordinate_limits(self):
+        if self.vessel.pose[0] >2*math.pi:
+            self.vessel.pose[0] += -2*math.pi
+        elif self.vessel.pose[0] <0:
+            self.vessel.pose[0] += 2*math.pi
+
+class eventlogger:
+    """ Logs simulation step events in matrices for debugging and display.
+    :param:
+    :return: the created object
+    """
+    def __init__(self,datalen,t_end,t_start):
+        self.datalen = datalen
+        self.t_end = t_end
+        self.i = 0
+        self.t0 = t_start
+        self.log_t = np.zeros((self.datalen,1))
+        self.log_acc = np.zeros((self.datalen,6))
+        self.log_vel = np.zeros((self.datalen,6))
+        self.log_pose = np.zeros((self.datalen,6))
+        self.log_Ftotal = np.zeros((self.datalen,6))
+        self.log_Fd = np.zeros((self.datalen,6))
+        self.log_Fc = np.zeros((self.datalen,6))
+        self.log_Fact= np.zeros((self.datalen,6))
+        self.log_dt = np.zeros((self.datalen,1))
+        self.log_u = np.zeros((self.datalen,3))
+        self.log_alpha = np.zeros((self.datalen,3))
+
+    def log(self,t,acc,vel,pose,Ft,Fd,Fc,Fact,dt,u,alpha):
+        if self.i <self.datalen:
+            self.log_t[self.i,:] = t
+            self.log_acc[self.i,:] = acc
+            self.log_vel[self.i,:] = vel
+            self.log_pose[self.i,:] = pose
+            self.log_Ftotal[self.i,:] = Ft
+            self.log_Fd[self.i,:] = Fd
+            self.log_Fc[self.i,:] = Fc
+            self.log_Fact[self.i,:] = Fact
+            self.log_dt[self.i,:] = dt
+            self.log_u[self.i,:] = u
+            self.log_alpha[self.i,:] = alpha
+            self.i += 1
+
+        elif self.i == self.datalen:
+            self.display()
+            self.i += 1
+
+    def display(self):
+        markersize_set = 2
+
+        axiss = ['x','y','z','rotx','roty','rotz']
+
+        fig, ((axvelx, axvely, axvelyaw), (axfd, axfc, axposyaw)) = plt.subplots(2, 3,figsize=(12, 9))
+        fig.suptitle('Ship state')
+
+        axvelx.plot(self.log_t-self.t0, self.log_vel[:,0])
+        axvelx.set_ylabel('u (m/s)')
+        axvelx.grid()
+
+        axvely.plot(self.log_t-self.t0, self.log_vel[:,1])
+        axvely.set_ylabel('v (m/s)')
+        axvely.grid()
+
+        axvelyaw.plot(self.log_t-self.t0, self.log_vel[:,5])
+        axvelyaw.set_ylabel('r (rad/s)')
+        axvelyaw.set_xlabel('time (s)')
+        axvelyaw.grid()
+
+        axposyaw.plot(self.log_t-self.t0, self.log_pose[:,5])
+        axposyaw.set_ylabel('heading (rad)')
+        axposyaw.set_xlabel('time (s)')
+        axposyaw.grid()
+
+        for i in range(6):
+            axfd.plot(self.log_t-self.t0, self.log_Fd[:,i],label=axiss[i])
+        axfd.legend()
+        axfd.set_ylabel('Dampening forces (N or N*m)')
+        axfd.set_xlabel('time (s)')
+        axfd.grid()
+
+        for i in range(6):
+            axfc.plot(self.log_t-self.t0, self.log_Fc[:,i],label=axiss[i])
+        axfc.legend()
+        axfc.set_ylabel('Coriolis centripetal forces (N or N*m)')
+        axfc.set_xlabel('time (s)')
+        axfc.grid()
+
+        plt.show()
+
+
 def actuationCallback(msg,args):
     """
     Sets tito neri actuation from respective ros topic
     """
     vessel = args
-    vessel.u = np.array([msg.data[0],msg.data[1],msg.data[2]])
+    vessel.u = np.array([msg.data[0]/60,msg.data[1]/60,msg.data[2]])
     vessel.alpha = np.array([msg.data[3],msg.data[4],math.pi/2])
     
     
