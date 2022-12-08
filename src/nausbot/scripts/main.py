@@ -371,7 +371,6 @@ def vesselModelRun():
         if headPubTimer.isready():
             # Publish heading
             msg = Float32()
-            print(sim.vessel.pose[5])
             msg.data =  sim.vessel.pose[5]
             headPub.publish(msg)
 
