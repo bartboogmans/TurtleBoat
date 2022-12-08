@@ -28,6 +28,7 @@ import math
 from sensor_msgs.msg import NavSatFix 
 import numpy as np
 import argparse
+import matplotlib.pyplot as plt
 
 RATE_PUB_HEADING = 16
 RATE_PUB_POS = 5
@@ -284,6 +285,8 @@ class vesselSim:
         self.lastt = self.runtimer.tstart
         self.initializing = 1
         self.ERRTRACKER1 = 0
+        self.el = eventlogger(1000,30,self.lastt)
+
         
     def simstep(self,t):
         if self.initializing:
@@ -329,6 +332,87 @@ class vesselSim:
         elif self.vessel.pose[0] <0:
             self.vessel.pose[0] += 2*math.pi
 
+    """ Logs simulation step events in matrices for debugging and display.
+    :param:
+    :return: the created object
+    """
+    def __init__(self,datalen,t_end,t_start):
+        self.datalen = datalen
+        self.t_end = t_end
+        self.i = 0
+        self.t0 = t_start
+        self.log_t = np.zeros((self.datalen,1))
+        self.log_acc = np.zeros((self.datalen,6))
+        self.log_vel = np.zeros((self.datalen,6))
+        self.log_pose = np.zeros((self.datalen,6))
+        self.log_Ftotal = np.zeros((self.datalen,6))
+        self.log_Fd = np.zeros((self.datalen,6))
+        self.log_Fc = np.zeros((self.datalen,6))
+        self.log_Fact= np.zeros((self.datalen,6))
+        self.log_dt = np.zeros((self.datalen,1))
+        self.log_u = np.zeros((self.datalen,3))
+        self.log_alpha = np.zeros((self.datalen,3))
+
+    def log(self,t,acc,vel,pose,Ft,Fd,Fc,Fact,dt,u,alpha):
+        if self.i <self.datalen:
+            self.log_t[self.i,:] = t
+            self.log_acc[self.i,:] = acc
+            self.log_vel[self.i,:] = vel
+            self.log_pose[self.i,:] = pose
+            self.log_Ftotal[self.i,:] = Ft
+            self.log_Fd[self.i,:] = Fd
+            self.log_Fc[self.i,:] = Fc
+            self.log_Fact[self.i,:] = Fact
+            self.log_dt[self.i,:] = dt
+            self.log_u[self.i,:] = u
+            self.log_alpha[self.i,:] = alpha
+            self.i += 1
+
+        elif self.i == self.datalen:
+            self.display()
+            self.i += 1
+
+    def display(self):
+        markersize_set = 2
+
+        axiss = ['x','y','z','rotx','roty','rotz']
+
+        fig, ((axvelx, axvely, axvelyaw), (axfd, axfc, axposyaw)) = plt.subplots(2, 3,figsize=(12, 9))
+        fig.suptitle('Ship state')
+
+        axvelx.plot(self.log_t-self.t0, self.log_vel[:,0])
+        axvelx.set_ylabel('u (m/s)')
+        axvelx.grid()
+
+        axvely.plot(self.log_t-self.t0, self.log_vel[:,1])
+        axvely.set_ylabel('v (m/s)')
+        axvely.grid()
+
+        axvelyaw.plot(self.log_t-self.t0, self.log_vel[:,5])
+        axvelyaw.set_ylabel('r (rad/s)')
+        axvelyaw.set_xlabel('time (s)')
+        axvelyaw.grid()
+
+        axposyaw.plot(self.log_t-self.t0, self.log_pose[:,5])
+        axposyaw.set_ylabel('heading (rad)')
+        axposyaw.set_xlabel('time (s)')
+        axposyaw.grid()
+
+        for i in range(6):
+            axfd.plot(self.log_t-self.t0, self.log_Fd[:,i],label=axiss[i])
+        axfd.legend()
+        axfd.set_ylabel('Dampening forces (N or N*m)')
+        axfd.set_xlabel('time (s)')
+        axfd.grid()
+
+        for i in range(6):
+            axfc.plot(self.log_t-self.t0, self.log_Fc[:,i],label=axiss[i])
+        axfc.legend()
+        axfc.set_ylabel('Coriolis centripetal forces (N or N*m)')
+        axfc.set_xlabel('time (s)')
+        axfc.grid()
+
+        plt.show()
 
 
 def actuationCallback(msg,args):
