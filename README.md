@@ -1,5 +1,5 @@
 # Nausbot
-Software-in-the-loop-simulator emulating a robotic ship on a ROS network
+Software-in-the-loop-simulator emulating a robotic ship on a ROS 1 network
 
 Initial developer: Bart Boogmans (bartboogmans@hotmail.com)
  
