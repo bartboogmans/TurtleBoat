@@ -322,11 +322,20 @@ class vesselSim:
             # Set new position (long (deg) ,lat (deg) ,altitude (m) ,roll (rad) ,pitch (rad) ,yaw (rad))
             self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
             self.lastt = t
-            self.bound_coordinate_limits()
-
+            self.bound_coordinate_limits_deg()
+            print('vesselpose:coordonate_bound',self.vessel.pose)
+            print('dlat,dlong,dpos_tangent',dlat,dlong,dpos_tangent)
             #self.el.log(t,nu_dot,self.vessel.vel,self.vessel.pose,Ftotal,Fd,Fc,Fact,dt,self.vessel.u,self.vessel.alpha)
 
-    def bound_coordinate_limits(self):
+    def bound_coordinate_limits_deg(self):
+
+        if self.vessel.pose[0] >360:
+            self.vessel.pose[0] += -360
+        elif self.vessel.pose[0] <0:
+            self.vessel.pose[0] += 360
+
+    def bound_coordinate_limits_rad(self):
+
         if self.vessel.pose[0] >2*math.pi:
             self.vessel.pose[0] += -2*math.pi
         elif self.vessel.pose[0] <0:
