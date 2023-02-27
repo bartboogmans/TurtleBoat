@@ -37,7 +37,7 @@ RATE_SIM = 200
 
 R_EARTH = 6371000 #m
 
-REFERENCE_RUNTIME_TIMEOUT = 1000 * 1E6  # 1000 ms / 1 second
+REFERENCE_RUNTIME_TIMEOUT = 5000 * 1E6  # 5 second
 
 
 # Process function arguments
@@ -89,7 +89,8 @@ class Vessel:
             self.thrustToForce.append(lambda v: 10*v) # output: Newton, Input: RPS
         
         self.u = np.zeros(self.ntrh)
-        self.actLims = np.zeros((self.ntrh,2))
+        self.u_lims = np.zeros((self.ntrh,2))
+        self.alpha_lims = np.zeros((self.ntrh,2))
         self.last_ref_timestamp = time.time_ns()
 
         
@@ -125,9 +126,16 @@ class TitoNeri(Vessel):
                               lambda PWM_value: PWM_value*3.575] # output: Newton, Input is normalized pwm [-1:1]
         # alternative purely quadratic relation aft thruster: lambda v: np.sign(v)*0.0009752*v**2,
         
-        self.actLims = np.array([[-60,60],[-60,60],[-1,1]]) # lower and upper bounds of all actuators
+        # Define limits of actuators
+        self.u_lims = np.array([[-60,60],[-60,60],[-1,1]]) # lower and upper bounds of all thruster outputs
+        self.alpha_lims = np.array([[-3/4*math.pi,3/4*math.pi],[-3/4*math.pi,3/4*math.pi],[math.pi/2,math.pi/2]]) # lower and upper bounds of all thruster angles
+        
+        # Define maximum rate of change of actuators
+        self.u_rate_lim = np.array([120,120,0.5])
+        self.alpha_rate_lim = np.array([math.pi*2.0,math.pi*2.0,0])
+        
         self.u = [0,0,0] # initial actuator output
-        self.alpha = [-math.pi/6,0,math.pi/2] # initial actuator orientation
+        self.alpha = [0,0,math.pi/2] # initial actuator orientation
         self.r_thruster = np.array([[-0.42,-0.08,0],[-0.42,+0.08,0],[0.28,0.00,0]])
         
         # Size
@@ -173,25 +181,38 @@ class TitoNeri(Vessel):
         """
         Fres = np.array([0,0,0,0,0,0])
         for nthr in range(self.ntrh):
-            Fthr_i_thrLocal = np.array([self.get_f_thr(nthr),0,0])
+			
+			# Check bounds of maximum thrust usage
+			if self.u[nthr] < self.u_lims[nthr][0]:
+				self.u[nthr] = self.u_lims[nthr][0]
+			elif self.u[nthr] > self.u_lims[nthr][1]:
+				self.u[nthr] = self.u_lims[nthr][1]
+            
+			# Check bounds of maximum thruster angles
+			if self.alpha[nthr] < self.alpha_lims[nthr][0]:
+				self.alpha[nthr] = self.alpha_lims[nthr][0]
+			elif self.alpha[nthr] > self.alpha_lims[nthr][1]:
+				self.alpha[nthr] = self.alpha_lims[nthr][1]
+
+			# Calculate response
+            Fthr_i_thrLocal = np.array([self.thrustToForce[n](self.u[n]),0,0])
             Fthr_i_body = np.matmul(R6_b_to_n(0,0,self.alpha[nthr]),Fthr_i_thrLocal)
             mi = np.cross(self.r_thruster[nthr],Fthr_i_body)
+            
+            # Add up response for each thruster
             Fres = Fres + np.array([Fthr_i_body[0],Fthr_i_body[1],Fthr_i_body[2],mi[0],mi[1],mi[2]])
         return Fres
-    
+
+'''
     def get_f_thr(self,n):
         """
         Calculate absolute thrust of an actuator taking into account limits
         :param: int:n number of thruster
         :return: float: resultant thrust
         """
-        u = self.u[n]
-        if u < self.actLims[0][0]:
-            u = self.actLims[0][0]
-        elif u > self.actLims[0][1]:
-            u = self.actLims[0][1]
-        return self.thrustToForce[n](u)
-    
+        return self.thrustToForce[n](self.u[n])
+'''
+
     def set_u(self):
         pass
         
