@@ -30,11 +30,15 @@ import numpy as np
 import argparse
 import matplotlib.pyplot as plt
 
+
 RATE_PUB_HEADING = 16
 RATE_PUB_POS = 5
 RATE_SIM = 200
 
 R_EARTH = 6371000 #m
+
+REFERENCE_RUNTIME_TIMEOUT = 1000 * 1E6  # 1000 ms / 1 second
+
 
 # Process function arguments
 parser = argparse.ArgumentParser()
@@ -55,7 +59,18 @@ if args.rateheading:
     RATE_PUB_HEADING = args.rateheading
 if args.rateposition:
     RATE_PUB_POS = args.rateheading
-    
+
+class SimulationState(Enum):
+    """
+    Class for managing object states in a readable manner
+    :param: none
+    :return: the created object
+    """
+    initializing = auto()
+    ready = auto()
+    busy = auto()
+    shuttingDown = auto()
+
 class Vessel: 
     """
     Class to collect various ship related statusses
@@ -75,7 +90,8 @@ class Vessel:
         
         self.u = np.zeros(self.ntrh)
         self.actLims = np.zeros((self.ntrh,2))
-        
+        self.last_ref_timestamp = time.time_ns()
+
         
     def getResultantThrust(self):
         return 1
@@ -283,16 +299,25 @@ class vesselSim:
         self.vessel = TitoNeri(vesselname_,pose0_,vel0_)
         self.runtimer = timedFncTracker(rate_)
         self.lastt = self.runtimer.tstart
-        self.initializing = 1
+        self.state = SimulationState.initializing
         self.ERRTRACKER1 = 0
         self.el = eventlogger(1000,30,self.lastt)
+        
 
         
     def simstep(self,t):
-        if self.initializing:
+        if self.state == SimulationState.initializing:
             self.lastt = time.time()
-            self.initializing = 0
-        else:
+            self.state = SimulationState.ready
+			
+        elif self.state == SimulationState.ready:
+			self.state = SimulationState.busy
+			
+			# Check for timeout of reference:
+			if time.time_ns() - self.vessel.last_ref_timestamp > REFERENCE_RUNTIME_TIMEOUT:
+				self.vessel.u = np.array([0,0,0])
+				self.vessel.alpha = np.array([0,0,0])
+
             dt = t - self.lastt
 
             # Calculate forces and torques
@@ -323,9 +348,8 @@ class vesselSim:
             self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
             self.lastt = t
             self.bound_coordinate_limits_deg()
-            #print('vesselpose:coordonate_bound',self.vessel.pose)
-            #print('dlat,dlong,dpos_tangent',dlat,dlong,dpos_tangent)
-            #self.el.log(t,nu_dot,self.vessel.vel,self.vessel.pose,Ftotal,Fd,Fc,Fact,dt,self.vessel.u,self.vessel.alpha)
+            
+            self.state = SimulationState.ready
 
     def bound_coordinate_limits_deg(self):
 
@@ -432,9 +456,8 @@ def actuationCallback(msg,args):
     vessel = args
     vessel.u = np.array([msg.data[0]/60,msg.data[1]/60,msg.data[2]])
     vessel.alpha = np.array([msg.data[3],msg.data[4],math.pi/2])
-    
-    
-    
+    vessel.last_ref_timestamp = time.time_ns()
+
     
 def vesselModelRun():
     posPubTimer = timedFncTracker(RATE_PUB_POS)
