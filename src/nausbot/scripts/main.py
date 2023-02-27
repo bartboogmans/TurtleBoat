@@ -463,11 +463,24 @@ def actuationCallback(msg,args):
     Sets tito neri actuation from respective ros topic
     """
     vessel = args
-    vessel.u = np.array([msg.data[0]/60,msg.data[1]/60,msg.data[2]])
-    vessel.alpha = np.array([msg.data[3],msg.data[4],math.pi/2])
+
+	# Set aft thrusters
+    for i in range(0, 2):
+		if msg.data[i]:
+			vessel.u[i] = msg.data[i]/60
+			
+	# Set bow thruster
+	if msg.data[2]:
+		vessel.u[2] = msg.data[2]/60
+	
+	# Set thruster angles
+	for i in range(0, 3):
+		if msg.data[i+3]:
+			vessel.alpha[i] = msg.data[i+3]
+
     vessel.last_ref_timestamp = time.time_ns()
 
-    
+
 def vesselModelRun():
     posPubTimer = timedFncTracker(RATE_PUB_POS)
     headPubTimer = timedFncTracker(RATE_PUB_HEADING)
