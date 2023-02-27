@@ -104,18 +104,6 @@ class TitoNeri(Vessel):
     :return: the created object
     """
     
-    ## https://pythonexamples.org/python-callback-function/
-    # this suggests implementation of user defined functions can be really simple:
-    # printFileLength("sample.txt", callbackFunc1)
-    
-    """
-    def printFileLength(path, callback):
-        f = open(path, "r")
-        length = len(f.read())
-        f.close()
-        callback(length)
-    """
-    
     def __init__(self,name_,pose_,vel_):
         super().__init__(name_,pose_,vel_)
 
