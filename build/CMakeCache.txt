@@ -486,7 +486,7 @@ std_msgs_DIR:PATH=/opt/ros/noetic/share/std_msgs/cmake
 
 //catkin environment
 CATKIN_ENV:INTERNAL=/home/bart/Documents/Nausbot/build/catkin_generated/env_cached.sh
-CATKIN_TEST_RESULTS_DIR:INTERNAL=/home/bart/Documents/Nausbot2/build/test_results
+CATKIN_TEST_RESULTS_DIR:INTERNAL=/home/bart/Documents/Nausbot/build/test_results
 //ADVANCED property for variable: CMAKE_ADDR2LINE
 CMAKE_ADDR2LINE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_AR
@@ -575,7 +575,7 @@ CMAKE_HAVE_PTHREAD_CREATE:INTERNAL=1
 CMAKE_HAVE_PTHREAD_H:INTERNAL=1
 //Source directory with the top level CMakeLists.txt file for this
 // project
-CMAKE_HOME_DIRECTORY:INTERNAL=/home/bart/Documents/Nausbot2/src
+CMAKE_HOME_DIRECTORY:INTERNAL=/home/bart/Documents/Nausbot/src
 //ADVANCED property for variable: CMAKE_INSTALL_BINDIR
 CMAKE_INSTALL_BINDIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_INSTALL_DATADIR
