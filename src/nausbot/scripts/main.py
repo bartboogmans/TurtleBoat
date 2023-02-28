@@ -161,6 +161,9 @@ class TitoNeri(Vessel):
 
 		self.M = self.Mrb + self.Ma
 		
+		# Variable to track whether this ship has it's reference timed out.
+		self.referenceTimedOut = 0
+		
 	def calc_f_act(self):
 		"""
 		Calculates resultant force from all the actuators
@@ -313,9 +316,11 @@ class vesselSim:
 			self.state = SimulationState.busy
 			
 			# Check for timeout of reference:
-			if time.time_ns() - self.vessel.last_ref_timestamp > REFERENCE_RUNTIME_TIMEOUT:
+			if time.time_ns() - self.vessel.last_ref_timestamp > REFERENCE_RUNTIME_TIMEOUT and not self.vessel.referenceTimedOut:
+				self.vessel.referenceTimedOut = 1
 				self.vessel.u = np.array([0,0,0])
 				self.vessel.alpha = np.array([0,0,0])
+				print('No reference in ' + "{:.2f}".format(REFERENCE_RUNTIME_TIMEOUT/1E9) +" seconds -> Stopping vessel actuation") 
 
 			dt = t - self.lastt
 
@@ -457,21 +462,24 @@ def actuationCallback(msg,args):
 	Future versions will also have this function assign reference that supports limiting actuator rate change. 
 	"""
 	vessel = args
-
 	# Set aft thrusters
-	for i in range(0, 2):
-		if msg.data[i]:
-			vessel.u[i] = msg.data[i]/60
+	for i in [0,1]:
+		if not math.isnan(msg.data[i]):
+			vessel.u[i] = msg.data[i]/60 # convert from rpm to rps
 			
 	# Set bow thruster
-	if msg.data[2]:
-		vessel.u[2] = msg.data[2]/60
+	if not math.isnan(msg.data[2]):
+		vessel.u[2] = msg.data[2]
 	
 	# Set thruster angles
-	for i in range(0, 3):
-		if msg.data[i+3]:
+	for i in [0,1]:
+		if not math.isnan(msg.data[i+3]):
 			vessel.alpha[i] = msg.data[i+3]
-
+	
+	# Track last reference events of this ship, for timeout purposes
+	if vessel.referenceTimedOut:
+		print('New reference detected. Responding to broadcast')
+		vessel.referenceTimedOut = 0
 	vessel.last_ref_timestamp = time.time_ns()
 
 
