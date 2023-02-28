@@ -8,3 +8,4 @@
 
 # modified environment variables
 export PWD='/home/bart/Documents/Nausbot/build'
+export ROS_PACKAGE_PATH='/home/bart/Documents/Nausbot2/src:/home/bart/Documents/Nausbot/src:/opt/ros/noetic/share'

@@ -1,8 +1,8 @@
-# Install script for directory: /home/bart/Documents/Nausbot/src/nausbot
+# Install script for directory: /home/bart/Documents/Nausbot2/src/nausbot
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/bart/Documents/Nausbot/install")
+  set(CMAKE_INSTALL_PREFIX "/home/bart/Documents/Nausbot2/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,25 +38,17 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/bart/Documents/Nausbot/build/nausbot/catkin_generated/installspace/nausbot.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/bart/Documents/Nausbot2/build/nausbot/catkin_generated/installspace/nausbot.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/nausbot/cmake" TYPE FILE FILES
-    "/home/bart/Documents/Nausbot/build/nausbot/catkin_generated/installspace/nausbotConfig.cmake"
-    "/home/bart/Documents/Nausbot/build/nausbot/catkin_generated/installspace/nausbotConfig-version.cmake"
+    "/home/bart/Documents/Nausbot2/build/nausbot/catkin_generated/installspace/nausbotConfig.cmake"
+    "/home/bart/Documents/Nausbot2/build/nausbot/catkin_generated/installspace/nausbotConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/nausbot" TYPE FILE FILES "/home/bart/Documents/Nausbot/src/nausbot/package.xml")
-endif()
-
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/nausbot" TYPE PROGRAM FILES "/home/bart/Documents/Nausbot/build/nausbot/catkin_generated/installspace/main.py")
-endif()
-
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/nausbot" TYPE PROGRAM FILES "/home/bart/Documents/Nausbot/build/nausbot/catkin_generated/installspace/tnmodel1.py")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/nausbot" TYPE FILE FILES "/home/bart/Documents/Nausbot2/src/nausbot/package.xml")
 endif()
 

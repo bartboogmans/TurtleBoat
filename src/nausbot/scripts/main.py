@@ -461,6 +461,10 @@ class eventlogger:
 def actuationCallback(msg,args):
     """
     Sets tito neri actuation from respective ros topic
+    
+    Note that this funtion is currently hardcoded towards the current Tito Neri actuation array definition. This is not generalized and prone to change. Future versions can generalize this callback structure. 
+    
+    Future versions will also have this function assign reference that supports limiting actuator rate change. 
     """
     vessel = args
 
