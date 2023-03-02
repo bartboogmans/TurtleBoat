@@ -37,7 +37,7 @@ RATE_SIM = 200
 
 R_EARTH = 6371000 #m
 
-REFERENCE_RUNTIME_TIMEOUT = 5000 * 1E6  # 5 second
+REFERENCE_RUNTIME_TIMEOUT = 5000 * 1E6  # 5 seconds
 
 
 # Process function arguments
