@@ -352,6 +352,10 @@ class vesselSim:
 			self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
 			self.lastt = t
 			self.bound_coordinate_limits_deg()
+			if self.vessel.pose[5] <0:
+				self.vessel.pose[5]+= 2*math.pi
+			elif self.vessel.pose[5] >2*math.pi:
+				self.vessel.pose[5]+= -2*math.pi
 			
 			self.state = SimulationState.ready
 
