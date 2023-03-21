@@ -503,9 +503,9 @@ def vesselModelRun():
 		
 	sim = vesselSim(VESSEL_ID,pose_init,vel_init,RATE_SIM)
 	
-	posPub = rospy.Publisher(sim.vessel.name+'/geopos_est',NavSatFix, queue_size=0)
-	headPub = rospy.Publisher(sim.vessel.name+'/heading_est', Float32, queue_size=0)
-	actSub = rospy.Subscriber(sim.vessel.name+'/u_ref', Float32MultiArray, actuationCallback,(sim.vessel))
+	posPub = rospy.Publisher(sim.vessel.name+'/state/geopos',NavSatFix, queue_size=0)
+	headPub = rospy.Publisher(sim.vessel.name+'/state/yaw', Float32, queue_size=0)
+	actSub = rospy.Subscriber(sim.vessel.name+'/reference/actuation', Float32MultiArray, actuationCallback,(sim.vessel))
 	rospy.init_node(sim.vessel.name+'_nausbot_geo', anonymous=True)
 	
 	rate = rospy.Rate(1000) #hz
