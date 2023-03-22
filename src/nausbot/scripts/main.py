@@ -562,8 +562,8 @@ def vesselModelRun():
 
 			# Internal velocities (usually not known in a real scenario, but here anyway published for diagnostic purposes)
 			msg = Twist()
-			msg.linear = sim.vessel.vel[0:3]
-			msg.angular = sim.vessel.vel[3:6]
+			msg.linear.x,msg.linear.y,msg.linear.z = sim.vessel.vel[0:3]
+			msg.angular.x,msg.angular.y,msg.angular.z = sim.vessel.vel[3:6]
 			diagnosticsVelocityPub.publish(msg)
 
 			# Resultant forces:
