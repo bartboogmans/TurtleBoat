@@ -313,6 +313,7 @@ class vesselSim:
 		self.ERRTRACKER1 = 0
 		self.el = eventlogger(1000,30,self.lastt)
 		self.lastF = np.zeros((6,1))
+		self.lastF_actuator = np.zeros((6,1))
 		
 
 		
@@ -339,6 +340,7 @@ class vesselSim:
 			Fact = self.vessel.calc_f_act() # Actuators (fins, rudders, propellers)
 			Ftotal = Fd + Fc + Fact
 			self.lastF = Ftotal
+			self.lastF_actuator = Fact
 
 			# Accelleration
 			nu_dot = np.matmul(np.linalg.inv(self.vessel.M),Ftotal)
@@ -525,6 +527,7 @@ def vesselModelRun():
 	
 	# Publishers that communicate diagnostics and system state
 	forcePub = rospy.Publisher(sim.vessel.name+'/state/sim_resultant_forces', Wrench, queue_size=0)
+	forcePub_actuator = rospy.Publisher(sim.vessel.name+'/state/sim_actuator_forces', Wrench, queue_size=0)
 	diagnosticsVelocityPub = rospy.Publisher(sim.vessel.name+'/diagnostics/sim_internal_velocities', Twist, queue_size=0)
 	actuatorStatePub = rospy.Publisher(sim.vessel.name+'/diagnostics/actuation', Float32MultiArray, queue_size=0)
 
@@ -563,11 +566,17 @@ def vesselModelRun():
 			msg.angular = sim.vessel.vel[3:6]
 			diagnosticsVelocityPub.publish(msg)
 
-			# Resultant forces of actuators:
+			# Resultant forces:
 			msg = Wrench()
 			msg.force.x,msg.force.y,msg.force.z = sim.lastF[0:3]
 			msg.torque.x,msg.torque.y,msg.torque.z = sim.lastF[3:6]
 			forcePub.publish(msg)
+
+			# Resultant forces of actuators:
+			msg = Wrench()
+			msg.force.x,msg.force.y,msg.force.z = sim.lastF_actuator[0:3]
+			msg.torque.x,msg.torque.y,msg.torque.z = sim.lastF_actuator[3:6]
+			forcePub_actuator.publish(msg)
 
 			# actuation reference
 			msg = Float32MultiArray()
