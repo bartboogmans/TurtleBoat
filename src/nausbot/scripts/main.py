@@ -26,6 +26,7 @@ from enum import Enum, auto
 import time
 import math
 from sensor_msgs.msg import NavSatFix 
+from geometry_msgs.msg import Wrench, Twist
 import numpy as np
 import argparse
 import matplotlib.pyplot as plt
@@ -34,6 +35,7 @@ import matplotlib.pyplot as plt
 RATE_PUB_HEADING = 16
 RATE_PUB_POS = 5
 RATE_SIM = 200
+RATE_PUB_STATE_AUXILIARY = 5
 
 R_EARTH = 6371000 #m
 
@@ -48,6 +50,7 @@ parser.add_argument('-v','--velocity0', nargs=6,type=float, help='Starting veloc
 parser.add_argument("-rsim", "--ratesimulator", type=float,help="set rate of simulation")
 parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of heading publishing")
 parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
+parser.add_argument("-raux", "--rateauxiliary", type=float,help="set rate of auxiliary state publishing")
 args = parser.parse_args()
 VESSEL_ID = args.vesselid
 
@@ -55,6 +58,8 @@ ERRTRACKER1 = 0
 
 if args.ratesimulator:
 	RATE_SIM = args.ratesimulator
+if args.rateauxiliary:
+	RATE_PUB_STATE_AUXILIARY = args.rateauxiliary
 if args.rateheading:
 	RATE_PUB_HEADING = args.rateheading
 if args.rateposition:
@@ -89,7 +94,10 @@ class Vessel:
 			self.thrustToForce.append(lambda v: 10*v) # output: Newton, Input: RPS
 		
 		self.u = np.zeros(self.ntrh)
+		self.u_ref = np.zeros(self.ntrh)
 		self.u_lims = np.zeros((self.ntrh,2))
+		self.alpha = np.zeros(self.ntrh)
+		self.alpha_ref = np.zeros(self.ntrh)
 		self.alpha_lims = np.zeros((self.ntrh,2))
 		self.last_ref_timestamp = time.time_ns()
 
@@ -119,8 +127,8 @@ class TitoNeri(Vessel):
 		self.alpha_lims = np.array([[-3/4*math.pi,3/4*math.pi],[-3/4*math.pi,3/4*math.pi],[math.pi/2,math.pi/2]]) # lower and upper bounds of all thruster angles
 		
 		# Define maximum rate of change of actuators
-		self.u_rate_lim = np.array([120,120,0.5])
-		self.alpha_rate_lim = np.array([math.pi*2.0,math.pi*2.0,0])
+		self.u_rate_lim = np.array([120,120,0.5]) # [r/s,r/s,1/s]
+		self.alpha_rate_lim = np.array([math.pi*2.0,math.pi*2.0,0]) # [rad/sec]
 		
 		self.u = [0,0,0] # initial actuator output
 		self.alpha = [0,0,math.pi/2] # initial actuator orientation
@@ -304,6 +312,7 @@ class vesselSim:
 		self.state = SimulationState.initializing
 		self.ERRTRACKER1 = 0
 		self.el = eventlogger(1000,30,self.lastt)
+		self.lastF = np.zeros((6,1))
 		
 
 		
@@ -329,6 +338,7 @@ class vesselSim:
 			Fc = -1*np.matmul(self.vessel.getCrb()+self.vessel.getCa(),self.vessel.vel)	# Coriolis & Centripetal
 			Fact = self.vessel.calc_f_act() # Actuators (fins, rudders, propellers)
 			Ftotal = Fd + Fc + Fact
+			self.lastF = Ftotal
 
 			# Accelleration
 			nu_dot = np.matmul(np.linalg.inv(self.vessel.M),Ftotal)
@@ -456,7 +466,6 @@ class eventlogger:
 
 		plt.show()
 
-
 def actuationCallback(msg,args):
 	"""
 	Sets tito neri actuation from respective ros topic
@@ -470,26 +479,32 @@ def actuationCallback(msg,args):
 	for i in [0,1]:
 		if not math.isnan(msg.data[i]):
 			vessel.u[i] = msg.data[i]/60 # convert from rpm to rps
+			vessel.u_ref[i] = msg.data[i]/60 # convert from rpm to rps
 			
 	# Set bow thruster
 	if not math.isnan(msg.data[2]):
 		vessel.u[2] = msg.data[2]
+		vessel.u_ref[2] = msg.data[2]
 	
 	# Set thruster angles
 	for i in [0,1]:
 		if not math.isnan(msg.data[i+3]):
 			vessel.alpha[i] = msg.data[i+3]
+			vessel.alpha_ref[i] = msg.data[i+3]
 	
 	# Track last reference events of this ship, for timeout purposes
 	if vessel.referenceTimedOut:
-		print('New reference detected. Responding to broadcast')
+		print('Reference detected after timeout. Responding to new broadcast')
 		vessel.referenceTimedOut = 0
+
 	vessel.last_ref_timestamp = time.time_ns()
 
 
 def vesselModelRun():
-	posPubTimer = timedFncTracker(RATE_PUB_POS)
-	headPubTimer = timedFncTracker(RATE_PUB_HEADING)
+	positionPubTimer = timedFncTracker(RATE_PUB_POS)
+	headingPubTimer = timedFncTracker(RATE_PUB_HEADING)
+	auxillaryStatePubTimer = timedFncTracker(RATE_PUB_STATE_AUXILIARY)
+
 	reportStatusTimer = timedFncTracker(0.5)
 	if args.pose0:
 		pose_init = args.pose0
@@ -499,13 +514,20 @@ def vesselModelRun():
 	if args.velocity0:
 		vel_init = args.velocity0
 	else:
-		vel_init = [0.3,0,0,0,0,0.05]
+		vel_init = [0.3,0.08,0.00,0,0,0.05]
 		
 	sim = vesselSim(VESSEL_ID,pose_init,vel_init,RATE_SIM)
 	
-	posPub = rospy.Publisher(sim.vessel.name+'/state/geopos',NavSatFix, queue_size=0)
-	headPub = rospy.Publisher(sim.vessel.name+'/state/yaw', Float32, queue_size=0)
-	actSub = rospy.Subscriber(sim.vessel.name+'/reference/actuation', Float32MultiArray, actuationCallback,(sim.vessel))
+	# Main functional publishers and subscribers
+	positionPub = rospy.Publisher(sim.vessel.name+'/state/geopos',NavSatFix, queue_size=0)
+	headingPub = rospy.Publisher(sim.vessel.name+'/state/yaw', Float32, queue_size=0)
+	actuatorReferenceSub = rospy.Subscriber(sim.vessel.name+'/reference/actuation', Float32MultiArray, actuationCallback,(sim.vessel))
+	
+	# Publishers that communicate diagnostics and system state
+	forcePub = rospy.Publisher(sim.vessel.name+'/state/sim_resultant_forces', Wrench, queue_size=0)
+	diagnosticsVelocityPub = rospy.Publisher(sim.vessel.name+'/diagnostics/sim_internal_velocities', Twist, queue_size=0)
+	actuatorStatePub = rospy.Publisher(sim.vessel.name+'/diagnostics/actuation', Float32MultiArray, queue_size=0)
+
 	rospy.init_node(sim.vessel.name+'_nausbot_geo', anonymous=True)
 	
 	rate = rospy.Rate(1000) #hz
@@ -514,23 +536,43 @@ def vesselModelRun():
 		if sim.runtimer.isready():
 			sim.simstep(sim.runtimer.tlast)
 		
-		if posPubTimer.isready():
+		if positionPubTimer.isready():
 			# Publish position
 			msg = NavSatFix()
-			msg.header.seq = posPubTimer.sequence
+			msg.header.seq = positionPubTimer.sequence
 			msg.header.stamp = rospy.Time.now()
 			msg.header.frame_id = 'world'
 			
 			msg.latitude = sim.vessel.pose[0]
 			msg.longitude = sim.vessel.pose[1]
 			msg.altitude = sim.vessel.pose[2]
-			posPub.publish(msg)
+			positionPub.publish(msg)
 		
-		if headPubTimer.isready():
+		if headingPubTimer.isready():
 			# Publish heading
 			msg = Float32()
 			msg.data =  sim.vessel.pose[5]
-			headPub.publish(msg)
+			headingPub.publish(msg)
+
+		if auxillaryStatePubTimer.isready():
+			# Publish auxiliary states
+
+			# Internal velocities (usually not known in a real scenario, but here anyway published for diagnostic purposes)
+			msg = Twist()
+			msg.linear = sim.vessel.vel[0:3]
+			msg.angular = sim.vessel.vel[3:6]
+			diagnosticsVelocityPub.publish(msg)
+
+			# Resultant forces of actuators:
+			msg = Wrench()
+			msg.force.x,msg.force.y,msg.force.z = sim.lastF[0:3]
+			msg.torque.x,msg.torque.y,msg.torque.z = sim.lastF[3:6]
+			forcePub.publish(msg)
+
+			# actuation reference
+			msg = Float32MultiArray()
+			msg.data = np.concatenate((sim.vessel.u_ref, sim.vessel.alpha_ref), axis=None)
+			actuatorStatePub.publish(msg)
 
 		if reportStatusTimer.isready():  
 			# Periodic reporting in terminal
