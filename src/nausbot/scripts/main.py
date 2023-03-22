@@ -526,8 +526,8 @@ def vesselModelRun():
 	actuatorReferenceSub = rospy.Subscriber(sim.vessel.name+'/reference/actuation', Float32MultiArray, actuationCallback,(sim.vessel))
 	
 	# Publishers that communicate diagnostics and system state
-	forcePub = rospy.Publisher(sim.vessel.name+'/state/sim_resultant_forces', Wrench, queue_size=0)
-	forcePub_actuator = rospy.Publisher(sim.vessel.name+'/state/sim_actuator_forces', Wrench, queue_size=0)
+	forcePub = rospy.Publisher(sim.vessel.name+'/diagnostics/sim_resultant_forces', Wrench, queue_size=0)
+	forcePub_actuator = rospy.Publisher(sim.vessel.name+'/diagnostics/sim_actuator_forces', Wrench, queue_size=0)
 	diagnosticsVelocityPub = rospy.Publisher(sim.vessel.name+'/diagnostics/sim_internal_velocities', Twist, queue_size=0)
 	actuatorStatePub = rospy.Publisher(sim.vessel.name+'/diagnostics/actuation', Float32MultiArray, queue_size=0)
 
