@@ -100,10 +100,12 @@ class vesselSim:
 		self.actuatorReferenceSub = rospy.Subscriber(self.vessel.name+'/reference/actuation', Float32MultiArray, self.actuationCallback)
 
 		# Publishers that communicate diagnostics and system state
-		self.forcePub = rospy.Publisher(self.vessel.name+'/diagnostics/sim_resultant_forces', Wrench, queue_size=0)
-		self.forcePub_actuator = rospy.Publisher(self.vessel.name+'/diagnostics/sim_actuator_forces', Wrench, queue_size=0)
-		self.diagnosticsVelocityPub = rospy.Publisher(self.vessel.name+'/diagnostics/sim_internal_velocities', Twist, queue_size=0)
-		self.actuatorStatePub = rospy.Publisher(self.vessel.name+'/diagnostics/sim_internal_actuation', Float32MultiArray, queue_size=0)
+		self.forcePub = rospy.Publisher(self.vessel.name+'/diagnostics/sim_state/f_res', Wrench, queue_size=0)
+		self.forcePub_actuator = rospy.Publisher(self.vessel.name+'/diagnostics/sim_state/f_actuator', Wrench, queue_size=0)
+		self.diagnosticsVelocityPub = rospy.Publisher(self.vessel.name+'/diagnostics/sim_state/velocity', Twist, queue_size=0)
+		self.actuatorStatePub = rospy.Publisher(self.vessel.name+'/diagnostics/sim_state/actuation', Float32MultiArray, queue_size=0)
+		self.forcePub_drag = rospy.Publisher(self.vessel.name+'/diagnostics/sim_state/f_drag', Wrench, queue_size=0)
+		self.forcePub_corioliscentripetal = rospy.Publisher(self.vessel.name+'/diagnostics/sim_state/f_corioliscentripetal', Wrench, queue_size=0)
 	
 	def run(self):
 		if self.runtimer.isready():
@@ -152,6 +154,18 @@ class vesselSim:
 			msg = Float32MultiArray()
 			msg.data = np.concatenate((sim.vessel.u_ref, sim.vessel.alpha_ref), axis=None)
 			self.actuatorStatePub.publish(msg)
+
+			# drag
+			msg = Wrench()
+			msg.force.x,msg.force.y,msg.force.z = self.Fd[0:3]
+			msg.torque.x,msg.torque.y,msg.torque.z = self.Fd[3:6]
+			self.forcePub_drag.publish(msg)
+
+			# coriolis centripetal forces
+			msg = Wrench()
+			msg.force.x,msg.force.y,msg.force.z = self.Fc[0:3]
+			msg.torque.x,msg.torque.y,msg.torque.z = self.Fc[3:6]
+			self.forcePub_corioliscentripetal.publish(msg)
 		
 		if self.reportStatusTimer.isready(): 
 			# Periodic reporting in terminal
