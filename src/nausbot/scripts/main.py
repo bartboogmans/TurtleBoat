@@ -45,7 +45,6 @@ args = parser.parse_args()
 VESSEL_ID = args.vesselid
 R_EARTH = 6371000 #m
 REFERENCE_RUNTIME_TIMEOUT = 5000 * 1E6# 5 seconds
-ACTUATION_PRIO_MSG_TIMEOUT = 3000 *1E6 # period after last actuation_prio message when normal actuation messages are accepted
 RATE_REPORT = 0.5
 if args.ratesimulator:
 	RATE_SIM = args.ratesimulator
@@ -222,11 +221,10 @@ class vesselSim:
 			self.vessel.pose = self.vessel.pose + np.array([dlat,dlong,dpos_tangent[2],d_eta[3],d_eta[4],d_eta[5]])
 			self.last_sim_run_timestamp = t
 
-			if self.vessel.pose[5] >360:
-				self.vessel.pose[5] += -360
-			elif self.vessel.pose[5] <0:
-				self.vessel.pose[5] += 360
+			# Bound coordinate and orientation limits
+			self.vessel.bound_coordinate_limits()
 			
+			# Unblock this function
 			self.simulationState = SimulationState.ready
 
 	def actuationCallback_prio(self,msg):
@@ -280,7 +278,6 @@ class vesselSim:
 
 		self.last_actuation_reference_message = time.time_ns()
 		
-
 class TitoNeri:	
 	"""
 	Class representing a Tito Neri model scale vessel
@@ -388,28 +385,74 @@ class TitoNeri:
 
 	def set_u(self):
 		pass
+
+	def change_actuators(self,dt):
+		"""
+		Changes all actuators from their current state towards their reference. 
+		This function takes into account:
+		- Rate limits
+		- Absolute limits
+
+			:param: dt (timestep in nanoseconds)
+			:return: none
+		"""
+		# Adjust actuator intensities (e.g. propeller speeds)
+
+		# Limit actuator intensities
+
+		# Adjust actuator orientations (e.g. angles of thrusters)
+
+		# Limit actuator orientations
+
+		pass
 		
+
 	def getCrb(self):
 		return getCoriolisCentripetal(self.vel,self.Mrb)
+	
 	def getCa(self):
 		return getCoriolisCentripetal(self.vel,self.Ma)
 
 	def getRbn(self):
 		return R6_b_to_n(self.pose[3],self.pose[4],self.pose[5])
 	
-	def bound_coordinate_limits_deg(self):
+	def bound_coordinate_limits(self):
+		"""
+		Limits the vessel's lat/longitude and orientations to be in the 0-360deg or 0-2pi range
+		"""
 
+		# Bound longitude
 		if self.pose[0] >360:
 			self.pose[0] += -360
 		elif self.pose[0] <0:
 			self.pose[0] += 360
 
-	def bound_coordinate_limits_rad(self):
+		# Bound latitude
+		if self.pose[1] >360:
+			self.pose[1] += -360
+		elif self.pose[1] <0:
+			self.pose[1] += 360
 
-		if self.pose[0] >2*math.pi:
-			self.pose[0] += -2*math.pi
-		elif self.pose[0] <0:
-			self.pose[0] += 2*math.pi
+		# Not bounding altitude (self.pose[2])
+
+		# Bound orientation: pitch
+		if self.pose[3] >2*math.pi:
+			self.pose[3] += -2*math.pi
+		elif self.pose[3] <0:
+			self.pose[3] += 2*math.pi
+
+		# Bound orientation: roll
+		if self.pose[4] >2*math.pi:
+			self.pose[4] += -2*math.pi
+		elif self.pose[4] <0:
+			self.pose[4] += 2*math.pi
+
+		# Bound orientation: yaw
+		if self.pose[5] >2*math.pi:
+			self.pose[5] += -2*math.pi
+		elif self.pose[5] <0:
+			self.pose[5] += 2*math.pi
+
 
 class SimulationState(Enum):
 	"""
