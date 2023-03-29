@@ -183,7 +183,8 @@ class vesselSim:
 			
 			# Check for timeout of reference:
 			if not (self.actuationState==ActuationState.timeout):
-				if ((time.time_ns() - self.last_actuation_reference_message > REFERENCE_RUNTIME_TIMEOUT) or (time.time_ns() - self.last_actuation_reference_message > REFERENCE_RUNTIME_TIMEOUT)) :
+				#print('check for actuator timeout1')
+				if (time.time_ns() - self.last_actuation_reference_message > REFERENCE_RUNTIME_TIMEOUT):
 					self.actuationState = ActuationState.timeout
 					self.vessel.u = np.array([0,0,0])
 					self.vessel.alpha = np.array([0,0,0]) # todo thr latency
@@ -229,12 +230,20 @@ class vesselSim:
 			self.simulationState = SimulationState.ready
 
 	def actuationCallback_prio(self,msg):
-		self.last_actuation_reference_prio_message = time.time_ns()
+		"""
+		Runs when an update is published on the priority actuation topic of this vessel.
+		This stream has priority over the other normal actuation topic (generally in case of emergency / joystick override). 
+		"""
 		self.process_actuation(msg)
+		self.actuationState = ActuationState.priority
 
 	def actuationCallback(self,msg):
-		if time.time_ns() - self.last_actuation_reference_prio_message > ACTUATION_PRIO_MSG_TIMEOUT:
+		"""
+		Runs when an update is published on the normal actuation topic of this vessel
+		"""
+		if not self.actuationState == ActuationState.priority:
 			self.process_actuation(msg)
+			self.actuationState = ActuationState.normal
 
 	def process_actuation(self,msg):
 		"""
@@ -244,6 +253,9 @@ class vesselSim:
 		
 		Future versions will also have this function assign reference that supports limiting actuator rate change. 
 		"""
+		if self.actuationState == ActuationState.timeout:
+			print('Detected new actuation stream; Listening to commands')
+		
 		# Set aft thrusters
 		for i in [0,1]:
 			if not math.isnan(msg.data[i]):
@@ -266,7 +278,8 @@ class vesselSim:
 			print('Reference detected after timeout. Responding to new broadcast')
 			self.vessel.referenceTimedOut = 0
 
-		self.last_ref_timestamp = time.time_ns()
+		self.last_actuation_reference_message = time.time_ns()
+		
 
 class TitoNeri:	
 	"""
@@ -341,7 +354,6 @@ class TitoNeri:
 		
 		# Variable to track whether this ship has it's reference timed out.
 		self.referenceTimedOut = 0  # todo check if this can be removed for good practice / neatness
-		self.last_ref_timestamp = time.time_ns()
 		self.last_actuation_reference_prio_message = 0
 		
 	def calc_f_act(self):
