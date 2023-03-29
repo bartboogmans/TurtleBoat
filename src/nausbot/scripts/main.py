@@ -396,13 +396,35 @@ class TitoNeri:
 			:param: dt (timestep in nanoseconds)
 			:return: none
 		"""
-		# Adjust actuator intensities (e.g. propeller speeds)
 
-		# Limit actuator intensities
+		for nthr in range(self.ntrh):
+			# Adjust actuator intensities (e.g. propeller speeds)
+			e = self.u_ref[nthr] - self.u[nthr]
+			step_limit = self.u_rate_lim * dt  * 1E-6
+			if abs(e) > step_limit:
+				self.u[nthr] = self.u_ref[nthr]
+			else:
+				self.u[nthr] = self.u[nthr] + math.copysign(1, e)*step_limit
 
-		# Adjust actuator orientations (e.g. angles of thrusters)
+			# Limit actuator intensities
+			if self.u[nthr] < self.u_lims[nthr][0]:
+				self.u[nthr] = self.u_lims[nthr][0]
+			elif self.u[nthr] > self.u_lims[nthr][1]:
+				self.u[nthr] = self.u_lims[nthr][1]
+			
+			# Adjust actuator orientations (e.g. angles of thrusters)
+			e = self.alpha_ref[nthr] - self.alpha[nthr]
+			step_limit = self.alpha_rate_lim * dt  * 1E-6
+			if abs(e) > step_limit:
+				self.alpha[nthr] = self.alpha_ref[nthr]
+			else:
+				self.alpha[nthr] = self.alpha[nthr] + math.copysign(1, e)*step_limit
 
-		# Limit actuator orientations
+			# Limit actuator orientations
+			if self.alpha[nthr] < self.alpha_lims[nthr][0]:
+				self.alpha[nthr] = self.alpha_lims[nthr][0]
+			elif self.alpha[nthr] > self.alpha_lims[nthr][1]:
+				self.alpha[nthr] = self.alpha_lims[nthr][1]
 
 		pass
 		
