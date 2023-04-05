@@ -41,3 +41,10 @@ Evaluating kinetic energy (Kirchhoff's equations of energy, 1869, or Fossen's ha
 $$ T = {1 \over 2} {v^\intercal Mv } $$
 
 with a 2hz timestep this occasionally resulted in volatile (unstable due to positive feedback) simulation results (within 15 simulation seconds). Raising to 200hz solved this (increase of potential was still there but orders of magnitude lower than dampening effects). 
+
+### Thruster model
+Actuators follow simplistic responses modeled with an absolute rate limiter. The image below shows as an example the propeller velocity reference (green) followed slightly delayed by the modelled behaviour (red)
+![image](https://user-images.githubusercontent.com/5917472/230133639-ea5e6c15-79bb-46af-9b8a-8fed1e0bf2d8.png)
+The magnitude of the latency is configurable. Current values are based upon earlier studies of the Tito Neri low level control system. 
+
+
