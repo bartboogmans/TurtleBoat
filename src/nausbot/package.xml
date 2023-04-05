@@ -3,7 +3,7 @@
   <name>nausbot</name>
   <version>0.0.1</version>
   <description>Simple vessel simulator on a single ROS node</description>
-  <author email="bartboogmans@hotmail.com">Bart Boogmans</author>
+  <maintainer email="bartboogmans@hotmail.com">Bart Boogmans</maintainer>
   <license>GPLv3</license>
   <url type="website">https://github.com/bartboogmans/Nausbot</url>
   <author email="bartboogmans@hotmail.com">Bart Boogmans</author>
