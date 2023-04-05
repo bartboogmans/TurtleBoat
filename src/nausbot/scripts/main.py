@@ -278,7 +278,6 @@ class vesselSim:
 		# Set thruster angles
 		for i in [0,1]:
 			if not math.isnan(msg.data[i+3]):
-				self.vessel.alpha[i] = msg.data[i+3]
 				self.vessel.alpha_ref[i] = msg.data[i+3]
 		
 		# Track last reference events of this ship, for timeout purposes
@@ -317,8 +316,8 @@ class TitoNeri:
 		self.alpha_lims = np.array([[-3/4*math.pi,3/4*math.pi],[-3/4*math.pi,3/4*math.pi],[math.pi/2,math.pi/2]]) # lower and upper bounds of all thruster angles
 		
 		# Define maximum rate of change of actuators
-		self.u_rate_lim = np.array([120,120,0.5]) # [r/s,r/s,1/s]
-		self.alpha_rate_lim = np.array([math.pi*2.0,math.pi*2.0,0]) # [rad/sec]
+		self.u_rate_lim = np.array([120,120,0.5]) # [r/s/s,r/s/s,1/s]
+		self.alpha_rate_lim = np.array([math.pi*0.70,math.pi*0.70,0.0]) # [rad/sec]
 		
 		self.u = [0,0,0] # initial actuator output
 		self.alpha = [0,0,math.pi/2] # initial actuator orientation
@@ -410,8 +409,9 @@ class TitoNeri:
 		for nthr in range(self.ntrh):
 			# Adjust actuator intensities (e.g. propeller speeds)
 			e = self.u_ref[nthr] - self.u[nthr]
-			step_limit = self.u_rate_lim * dt  * 1E-6
-			if abs(e) > step_limit:
+			step_limit = self.u_rate_lim[nthr] * dt
+
+			if abs(e) < step_limit:
 				self.u[nthr] = self.u_ref[nthr]
 			else:
 				self.u[nthr] = self.u[nthr] + math.copysign(1, e)*step_limit
@@ -424,8 +424,8 @@ class TitoNeri:
 			
 			# Adjust actuator orientations (e.g. angles of thrusters)
 			e = self.alpha_ref[nthr] - self.alpha[nthr]
-			step_limit = self.alpha_rate_lim * dt  * 1E-6
-			if abs(e) > step_limit:
+			step_limit = self.alpha_rate_lim[nthr] * dt
+			if abs(e) < step_limit:
 				self.alpha[nthr] = self.alpha_ref[nthr]
 			else:
 				self.alpha[nthr] = self.alpha[nthr] + math.copysign(1, e)*step_limit
