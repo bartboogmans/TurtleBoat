@@ -53,7 +53,7 @@ else:
 if args.rateauxiliary:
 	RATE_PUB_STATE_AUXILIARY = args.rateauxiliary
 else:
-	RATE_PUB_STATE_AUXILIARY = 5
+	RATE_PUB_STATE_AUXILIARY = 10
 if args.rateheading:
 	RATE_PUB_HEADING = args.rateheading
 else:
@@ -152,12 +152,12 @@ class vesselSim:
 
 			# actuation reference
 			msg = Float32MultiArray()
-			msg.data = np.concatenate((sim.vessel.u_ref, sim.vessel.alpha_ref), axis=None)
+			msg.data = np.concatenate((sim.vessel.u_ref[0]*60,sim.vessel.u_ref[1]*60,sim.vessel.u_ref[2], sim.vessel.alpha_ref), axis=None)
 			self.actuatorRefPub.publish(msg)
 
 			# actuation state
 			msg = Float32MultiArray()
-			msg.data = np.concatenate((sim.vessel.u, sim.vessel.alpha), axis=None)
+			msg.data = np.concatenate((sim.vessel.u[0]*60,sim.vessel.u[1]*60,sim.vessel.u[2], sim.vessel.alpha), axis=None)
 			self.actuatorStatePub.publish(msg)
 
 			# drag
@@ -267,12 +267,10 @@ class vesselSim:
 		# Set aft thrusters
 		for i in [0,1]:
 			if not math.isnan(msg.data[i]):
-				#self.vessel.u[i] = msg.data[i]/60 # convert from rpm to rps
 				self.vessel.u_ref[i] = msg.data[i]/60 # convert from rpm to rps
 				
 		# Set bow thruster
 		if not math.isnan(msg.data[2]):
-			#self.vessel.u[2] = msg.data[2]
 			self.vessel.u_ref[2] = msg.data[2]
 		
 		# Set thruster angles
