@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Ship simulator / software-in-the-loop-system that listens to actuation and outputs simulated ship response.
