@@ -597,7 +597,7 @@ if __name__ == '__main__':
 		if args.pose0:
 			pose_init = args.pose0
 		else:
-			pose_init = [52.00153943981206, 4.371986684664603,0,0,0,0]
+			pose_init = [52.00140854178934, 4.37186309232179,0,0,0,0]
 		
 		if args.velocity0:
 			vel_init = args.velocity0
