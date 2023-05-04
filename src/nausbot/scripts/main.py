@@ -39,7 +39,7 @@ parser.add_argument("-rsim", "--ratesimulator", type=float,help="set rate of sim
 parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of heading publishing")
 parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
 parser.add_argument("-raux", "--rateauxiliary", type=float,help="set rate of auxiliary state publishing")
-args = parser.parse_args()
+args, unknown = parser.parse_known_args()
 
 # Set constants
 VESSEL_ID = args.vesselid
