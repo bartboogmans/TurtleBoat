@@ -611,9 +611,14 @@ if __name__ == '__main__':
 		sim = vesselSim(VESSEL_ID,pose_init,vel_init)
 
 		# Start the main loop
-		rate = rospy.Rate(2000) #hz
+		rate = rospy.Rate(400) #hz
 		while not rospy.is_shutdown():
 			sim.run()
 			rate.sleep()
 	except rospy.ROSInterruptException:
 		pass
+
+
+
+	
+
