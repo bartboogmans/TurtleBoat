@@ -4,7 +4,17 @@
 Ship simulator / software-in-the-loop-system that listens to actuation and outputs simulated ship response.
 Initial developer: Bart Boogmans (bartboogmans@hotmail.com)
 
+This script uses eulers method to computate the response of a ship to actuation.
 
+ToDo: 
+- Check if the semi implicit euler method is more appropriate for this application.
+- Do checks for timeframe between frames, if too large, use smaller stepsizes. 
+   in general this could be done with fixed minimum stepsize or checking eigenvalues of the A matrix.
+
+	See https://www.youtube.com/watch?v=KPoeNZZ6H4s
+   if the timestep is too large the steps can be split into smaller timesteps. 
+Possibly also take into account negative eigenvalues of the A matrix, which would indicate instability that can cause some jittering
+Possibly utilize pole zero matching to get a more stable system. (supposedly more accurate results for extra computational cost)
 Use: 
  Install ROS & Setup Environment
  >> rosrun nausbot main.py vessel1name <optional parameters>
