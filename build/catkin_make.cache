@@ -1,2 +1,0 @@
-nausbot
--DCATKIN_DEVEL_PREFIX=/home/bart/Documents/Nausbot/devel -DCMAKE_INSTALL_PREFIX=/home/bart/Documents/Nausbot/install -G Unix Makefiles
