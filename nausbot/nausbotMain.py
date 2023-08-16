@@ -542,14 +542,12 @@ class VesselSimNode(Node):
 	def print_status(self):
 		# Determine system frequencies rounded to two decimals
 		freq_callback_reference = round(self.tracker_callback_actuator_reference/PERIOD_REPORT_STATUS,2)
-		freq_callback_mainloop = round(self.tracker_callback_mainloop/PERIOD_REPORT_STATUS,2)
 		freq_callback_simstep = round(self.tracker_iteration_simstep/PERIOD_REPORT_STATUS,2)
 		freq_callback_pub_pos = round(self.tracker_callback_pub_pos/PERIOD_REPORT_STATUS,2)
 		freq_callback_pub_heading = round(self.tracker_pub_heading/PERIOD_REPORT_STATUS,2)
 		freq_callback_pub_aux = round(self.tracker_callback_pub_auxiliary/PERIOD_REPORT_STATUS,2)
 		
 		# Make strings of numbers without color if above zero and and rascolors.FAIL otherwise
-		freq_main_loop_str = Statuscolors.OKGREEN +str(freq_callback_mainloop)  + Statuscolors.NORMAL if freq_callback_mainloop > 0 else Statuscolors.FAIL + str(freq_callback_mainloop) + Statuscolors.NORMAL
 		freq_sim_step_str = Statuscolors.OKGREEN +str(freq_callback_simstep)  + Statuscolors.NORMAL if freq_callback_simstep > 0 else Statuscolors.FAIL + str(freq_callback_simstep) + Statuscolors.NORMAL
 		freq_pub_pos_str = Statuscolors.OKGREEN +str(freq_callback_pub_pos)  + Statuscolors.NORMAL if freq_callback_pub_pos > 0 else Statuscolors.FAIL + str(freq_callback_pub_pos) + Statuscolors.NORMAL
 		freq_pub_heading_str = Statuscolors.OKGREEN +str(freq_callback_pub_heading)  + Statuscolors.NORMAL if freq_callback_pub_heading > 0 else Statuscolors.FAIL + str(freq_callback_pub_heading) + Statuscolors.NORMAL
@@ -559,7 +557,6 @@ class VesselSimNode(Node):
 		# print vessel name in blue following time, frequencies of mainloop, simstep and actuator reference
 		print(	' ' + Statuscolors.OKBLUE + self.vesselname + Statuscolors.NORMAL+ \
 				' [Vessel Simulator]['+str(round(time.time()-self.timestamp_start,2))+ ']' + \
-				' f_main='+freq_main_loop_str+ \
 				' f_sim='+freq_sim_step_str+ \
 				' f_actuator_ref='+freq_actuator_reference_str+ \
 				' f_pub_pos='+freq_pub_pos_str+ \
@@ -567,7 +564,6 @@ class VesselSimNode(Node):
 				' f_pub_aux='+freq_pub_aux_str	)
 
 	def resetTrackers(self):
-		self.tracker_callback_mainloop = 0
 		self.tracker_iteration_simstep = 0
 		self.tracker_callback_pub_pos = 0
 		self.tracker_pub_heading = 0
