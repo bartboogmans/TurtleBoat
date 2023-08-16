@@ -371,7 +371,7 @@ class VesselSimNode(Node):
 		# Make ros2 publishers and subscribers for main functionality
 		self.positionPub = self.create_publisher(NavSatFix,self.vessel.name+'/state/geopos', qos_profile_control_data)
 		self.headingPub = self.create_publisher(Float32,self.vessel.name+'/state/heading', qos_profile_control_data)
-		self.actuatorReferenceSub_prio = self.create_subscription(Float32MultiArray,self.vessel.name+'/reference/actuation',self.actuationCallback_prio,qos_profile_control_data)
+		self.actuatorReferenceSub_prio = self.create_subscription(Float32MultiArray,self.vessel.name+'/reference/actuation_prio',self.actuationCallback_prio,qos_profile_control_data)
 		self.actuatorReferenceSub = self.create_subscription(Float32MultiArray,self.vessel.name+'/reference/actuation',self.actuationCallback,qos_profile_control_data)
 	
 		# Publishers that communicate diagnostics and system state
