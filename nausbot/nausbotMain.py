@@ -27,7 +27,7 @@ args, unknown = parser.parse_known_args()
 # Set constants
 VESSEL_ID = args.vesselid
 R_EARTH = 6371000 #m
-RATE_SIM_TARGET = args.ratesimulator if args.ratesimulator else 200 # Hz
+RATE_SIM_TARGET = args.ratesimulator if args.ratesimulator else 400 # Hz
 RATE_PUB_STATE_AUXILIARY = args.rateauxiliary if args.rateauxiliary else 10 # Hz
 RATE_PUB_HEADING = args.rateheading if args.rateheading else 16 # Hz
 RATE_PUB_POS = args.rateposition if args.rateposition else 5 # Hz
@@ -86,8 +86,8 @@ class Vessel:
 		:return: the created object
 		"""
 
-		self.pose = np.array(pose_) # [lat long altitude pitch roll yaw] rotations w.r.t. north east down
-		self.vel = np.array(vel_) # [u,v,w,p,q,r]
+		self.pose = np.array(pose_,dtype=np.float64) # [lat long altitude pitch roll yaw] rotations w.r.t. north east down
+		self.vel = np.array(vel_,dtype=np.float64) # [u,v,w,p,q,r]
 		self.name = name_.replace(" ","_")
 
 		## Actuator parameters
@@ -100,9 +100,9 @@ class Vessel:
 		# alternative purely quadratic relation aft thruster: lambda v: np.sign(v)*0.0009752*v**2,
 		
 		# Define actuator reference parameters
-		self.u_ref = np.zeros(self.ntrh)
-		self.alpha_ref = np.zeros(self.ntrh)
-		
+		self.u_ref = np.zeros(self.ntrh,dtype=np.float64)
+		self.alpha_ref = np.zeros(self.ntrh,dtype=np.float64)
+	
 		# Define limits of actuators
 		self.u_lims = np.array([[-60,60],[-60,60],[-1,1]]) # lower and upper bounds of all thruster outputs
 		self.alpha_lims = np.array([[-3/4*math.pi,3/4*math.pi],[-3/4*math.pi,3/4*math.pi],[math.pi/2,math.pi/2]]) # lower and upper bounds of all thruster angles
@@ -111,11 +111,14 @@ class Vessel:
 		self.u_rate_lim = np.array([120,120,0.5]) # [r/s/s,r/s/s,1/s]
 		self.alpha_rate_lim = np.array([math.pi*0.70,math.pi*0.70,0.0]) # [rad/sec]
 		
-		self.u = np.array([0,0,0]) # initial actuator output
-		self.alpha = np.array([0,0,math.pi/2]) # initial actuator orientation
+		# Define initial actuator state
+		self.u = np.zeros(3,dtype=np.float64) # initial actuator output
+		self.alpha = np.array([0.0,0.0,math.pi/2]) # initial actuator orientation
+
+		# Define position of thrusters wrt Center-Origin (not necessarily CG)
 		self.r_thruster = np.array([[-0.42,-0.08,0],[-0.42,+0.08,0],[0.28,0.00,0]])
 		
-		# Size
+		## Size
 		self.l = 0.97
 		self.w = 0.30
 
