@@ -8,7 +8,7 @@ import numpy as np
 import argparse
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
+from std_srvs.srv import Trigger as TriggerSrv
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 
 parser = argparse.ArgumentParser()
@@ -31,6 +31,9 @@ RATE_SIM_TARGET = args.ratesimulator if args.ratesimulator else 400 # Hz
 RATE_PUB_STATE_AUXILIARY = args.rateauxiliary if args.rateauxiliary else 10 # Hz
 RATE_PUB_HEADING = args.rateheading if args.rateheading else 16 # Hz
 RATE_PUB_POS = args.rateposition if args.rateposition else 5 # Hz
+STREAM_AUXILIARY = args.sendauxiliary if args.sendauxiliary else False
+POSE_INITIAL = args.pose0 if args.pose0 else [52.00140854178, 4.37186309232,0,0,0,math.pi/4]
+VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [0.3,0.08,0.00,0,0,0.05]
 REFERENCE_RUNTIME_TIMEOUT = 5 # seconds
 PERIOD_REPORT_STATUS = 2 # seconds
 
@@ -345,12 +348,10 @@ def R3_euler_xyz(roll,pitch,yaw):
 						[s1*s3-c1*c3*s2, 	c3*s1+c1*s2*s3, 	c1*c2]]  	)
 	 
 class VesselSimNode(Node):
-	def __init__(self,vesselname_:str,pose0:float=[52.00140854178, 4.37186309232,0,0,0,math.pi/4],vel0_:float=[0.3,0.08,0.00,0,0,0.05]):
+	def __init__(self,vesselID_):
 		super().__init__('NausbotMain')
-		self.vesselname = vesselname_
-	
-		self.vessel = Vessel(vesselname_,pose0,vel0_)
-
+		self.vessel = Vessel(VESSEL_ID,POSE_INITIAL,VELOCITY_INITIAL)
+		
 		# Define the QoS profile for the publisher
 		qos_profile_control_data = QoSProfile(
 			reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
@@ -391,6 +392,33 @@ class VesselSimNode(Node):
 		self.timer_publish_pos = self.create_timer(1/RATE_PUB_POS, self.timer_callback_publish_pos)
 		self.timer_publish_heading = self.create_timer(1/RATE_PUB_HEADING, self.timer_callback_publish_heading)
 		self.timer_report_status = self.create_timer(PERIOD_REPORT_STATUS, self.timer_callback_report_status)
+		# Make ros2 service reset pose and velocity from EmptySrv type
+		self.srv_reset_pose_and_velocity = self.create_service(TriggerSrv,self.vessel.name+'/service/reset_pose_and_velocity',self.srv_reset_pose_and_velocity)
+
+	def srv_reset_pose_and_velocity(self,request,response):
+		"""
+		Runs when a request is made to reset the pose and velocity of the vessel
+		"""
+		self.vessel.pose = np.array(POSE_INITIAL)
+		self.vessel.vel = np.array(VELOCITY_INITIAL)
+		response.success = True
+		return response
+
+	def srv_callback_setPose(self,request,response):
+		"""
+		Runs when a request is made to set the pose of the vessel
+		"""
+		self.vessel.pose = np.array(request.data)
+		response.success = True
+		return response
+	
+	def srv_callback_setVelocity(self,request,response):
+		"""
+		Runs when a request is made to set the velocity of the vessel
+		"""
+		self.vessel.vel = np.array(request.data)
+		response.success = True
+		return response
 
 	def timer_callback_simstep(self):
 		"""
