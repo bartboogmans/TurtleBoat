@@ -246,7 +246,6 @@ class Vessel:
 			elif self.alpha[nthr] > self.alpha_lims[nthr][1]:
 				self.alpha[nthr] = self.alpha_lims[nthr][1]
 
-		pass
 	
 	def getCoriolisCentripetal_total(self):
 		return getCoriolisCentripetal(self.vel,self.M)
@@ -381,7 +380,6 @@ class VesselSimNode(Node):
 	
 		# Optional publishers that communicate diagnostics and system state
 		if STREAM_AUXILIARY:
-			print('Auxiliary/Diagnostics state will be streamed as the input of --sendauxiliary field is set to True')
 			self.forcePub_resultant = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_resultant', qos_profile_control_data)
 			self.forcePub_actuator = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_actuator', qos_profile_control_data)
 			self.forcePub_drag = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_drag', qos_profile_control_data)
@@ -397,6 +395,8 @@ class VesselSimNode(Node):
 		self.timer_report_status = self.create_timer(PERIOD_REPORT_STATUS, self.timer_callback_report_status)
 		if STREAM_AUXILIARY:
 			self.timer_publish_auxiliary = self.create_timer(1/RATE_PUB_STATE_AUXILIARY, self.timer_callback_publish_auxiliary)
+
+
 		# Make ros2 service reset pose and velocity from EmptySrv type
 		self.srv_reset_pose_and_velocity = self.create_service(TriggerSrv,self.vessel.name+'/service/reset_pose_and_velocity',self.srv_reset_pose_and_velocity)
 
@@ -409,21 +409,6 @@ class VesselSimNode(Node):
 		response.success = True
 		return response
 
-	def srv_callback_setPose(self,request,response):
-		"""
-		Runs when a request is made to set the pose of the vessel
-		"""
-		self.vessel.pose = np.array(request.data)
-		response.success = True
-		return response
-	
-	def srv_callback_setVelocity(self,request,response):
-		"""
-		Runs when a request is made to set the velocity of the vessel
-		"""
-		self.vessel.vel = np.array(request.data)
-		response.success = True
-		return response
 
 	def timer_callback_simstep(self):
 		"""
