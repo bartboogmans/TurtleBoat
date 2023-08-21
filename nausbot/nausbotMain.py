@@ -22,6 +22,7 @@ parser.add_argument("-rsim", "--ratesimulator", type=float,help="set rate of sim
 parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of heading publishing")
 parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
 parser.add_argument("-raux", "--rateauxiliary", type=float,help="set rate of auxiliary state publishing")
+parser.add_argument("-saux", "--sendauxiliary", type=bool,help="set if auxiliary state should be published")
 args, unknown = parser.parse_known_args()
 
 # Set constants
@@ -378,20 +379,24 @@ class VesselSimNode(Node):
 		self.actuatorReferenceSub_prio = self.create_subscription(Float32MultiArray,self.vessel.name+'/reference/actuation_prio',self.actuationCallback_prio,qos_profile_control_data)
 		self.actuatorReferenceSub = self.create_subscription(Float32MultiArray,self.vessel.name+'/reference/actuation',self.actuationCallback,qos_profile_control_data)
 	
-		# Publishers that communicate diagnostics and system state
-		self.forcePub_resultant = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_resultant', qos_profile_control_data)
-		self.forcePub_actuator = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_actuator', qos_profile_control_data)
-		self.forcePub_drag = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_drag', qos_profile_control_data)
-		self.forcePub_corioliscentripetal = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_corioliscentripetal', qos_profile_control_data)
-		self.velocityPub = self.create_publisher(Twist,self.vessel.name+'/diagnostics/sim_state/velocity', qos_profile_control_data)
-		self.actuatorStatePub = self.create_publisher(Float32MultiArray,self.vessel.name+'/diagnostics/sim_state/actuator_state', qos_profile_control_data)
-		self.actuatorRefPub = self.create_publisher(Float32MultiArray,self.vessel.name+'/diagnostics/sim_state/actuator_reference', qos_profile_control_data)
-	
+		# Optional publishers that communicate diagnostics and system state
+		if STREAM_AUXILIARY:
+			print('Auxiliary/Diagnostics state will be streamed as the input of --sendauxiliary field is set to True')
+			self.forcePub_resultant = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_resultant', qos_profile_control_data)
+			self.forcePub_actuator = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_actuator', qos_profile_control_data)
+			self.forcePub_drag = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_drag', qos_profile_control_data)
+			self.forcePub_corioliscentripetal = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_corioliscentripetal', qos_profile_control_data)
+			self.velocityPub = self.create_publisher(Twist,self.vessel.name+'/diagnostics/sim_state/velocity', qos_profile_control_data)
+			self.actuatorStatePub = self.create_publisher(Float32MultiArray,self.vessel.name+'/diagnostics/sim_state/actuator_state', qos_profile_control_data)
+			self.actuatorRefPub = self.create_publisher(Float32MultiArray,self.vessel.name+'/diagnostics/sim_state/actuator_reference', qos_profile_control_data)
+		
 		# Create timer objects
 		self.timer_simstep = self.create_timer(1/RATE_SIM_TARGET, self.timer_callback_simstep)
 		self.timer_publish_pos = self.create_timer(1/RATE_PUB_POS, self.timer_callback_publish_pos)
 		self.timer_publish_heading = self.create_timer(1/RATE_PUB_HEADING, self.timer_callback_publish_heading)
 		self.timer_report_status = self.create_timer(PERIOD_REPORT_STATUS, self.timer_callback_report_status)
+		if STREAM_AUXILIARY:
+			self.timer_publish_auxiliary = self.create_timer(1/RATE_PUB_STATE_AUXILIARY, self.timer_callback_publish_auxiliary)
 		# Make ros2 service reset pose and velocity from EmptySrv type
 		self.srv_reset_pose_and_velocity = self.create_service(TriggerSrv,self.vessel.name+'/service/reset_pose_and_velocity',self.srv_reset_pose_and_velocity)
 
@@ -586,13 +591,17 @@ class VesselSimNode(Node):
 		freq_actuator_reference_str = Statuscolors.OKGREEN +str(freq_callback_reference)  + Statuscolors.NORMAL if freq_callback_reference > 0 else Statuscolors.FAIL + str(freq_callback_reference) + Statuscolors.NORMAL
 
 		# print vessel name in blue following time, frequencies of mainloop, simstep and actuator reference
-		print(	' ' + Statuscolors.OKBLUE + self.vesselname + Statuscolors.NORMAL+ \
-				' [Vessel Simulator]['+str(round(time.time()-self.timestamp_start,2))+ ']' + \
-				' f_sim='+freq_sim_step_str+ \
-				' f_actuator_ref='+freq_actuator_reference_str+ \
-				' f_pub_pos='+freq_pub_pos_str+ \
-				' f_pub_heading='+freq_pub_heading_str+ \
-				' f_pub_aux='+freq_pub_aux_str	)
+		statusstring = ' ' + Statuscolors.OKBLUE + self.vessel.name + Statuscolors.NORMAL+ \
+					' [Vessel Simulator]['+str(round(time.time()-self.timestamp_start,2))+ ']' + \
+					' f_sim='+freq_sim_step_str+ \
+					' f_actuator_ref='+freq_actuator_reference_str+ \
+					' f_pub_pos='+freq_pub_pos_str+ \
+					' f_pub_heading='+freq_pub_heading_str
+		
+		if STREAM_AUXILIARY:
+			print(statusstring+ ' f_pub_aux='+freq_pub_aux_str)
+		else:
+			print(statusstring)
 
 	def resetTrackers(self):
 		self.tracker_iteration_simstep = 0
@@ -601,22 +610,24 @@ class VesselSimNode(Node):
 		self.tracker_callback_pub_auxiliary = 0
 		self.tracker_callback_actuator_reference = 0
 
-	def publish_auxiliary(self):
+	def timer_callback_publish_auxiliary(self):
 		"""
 		Publishes auxiliary states of the vessel such as forces, velocities, actuator states, etc.
 		These states are typically not visible with a real ship, but can be useful for diagnostics and debugging.
 		"""
+		self.tracker_callback_pub_auxiliary += 1
+
 		# Internal velocities (usually not known in a real scenario, but here anyway published for diagnostic purposes)
 		msg = Twist()
 		msg.linear.x,msg.linear.y,msg.linear.z = self.vessel.vel[0:3]
 		msg.angular.x,msg.angular.y,msg.angular.z = self.vessel.vel[3:6]
-		self.diagnosticsVelocityPub.publish(msg)
+		self.velocityPub.publish(msg)
 
 		# Resultant forces:
 		msg = Wrench()
 		msg.force.x,msg.force.y,msg.force.z = self.Ftotal[0:3]
 		msg.torque.x,msg.torque.y,msg.torque.z = self.Ftotal[3:6]
-		self.forcePub.publish(msg)
+		self.forcePub_resultant.publish(msg)
 
 		# Resultant forces of actuators:
 		msg = Wrench()
@@ -626,12 +637,12 @@ class VesselSimNode(Node):
 
 		# actuation reference
 		msg = Float32MultiArray()
-		msg.data = np.concatenate((self.vessel.u_ref[0]*60,self.vessel.u_ref[1]*60,self.vessel.u_ref[2], self.vessel.alpha_ref), axis=None)
+		msg.data = [self.vessel.u_ref[0]*60,self.vessel.u_ref[1]*60,self.vessel.u_ref[2], self.vessel.alpha_ref[0], self.vessel.alpha_ref[1], self.vessel.alpha_ref[2]]
 		self.actuatorRefPub.publish(msg)
 
 		# actuation state
 		msg = Float32MultiArray()
-		msg.data = np.concatenate((self.vessel.u[0]*60,self.vessel.u[1]*60,self.vessel.u[2], self.vessel.alpha), axis=None)
+		msg.data = [self.vessel.u[0].astype(float)*60,self.vessel.u[1].astype(float)*60,self.vessel.u[2].astype(float), self.vessel.alpha[0], self.vessel.alpha[1], self.vessel.alpha[2]]
 		self.actuatorStatePub.publish(msg)
 
 		# drag
