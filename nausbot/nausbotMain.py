@@ -108,7 +108,7 @@ class Vessel:
 		self.alpha_lims = np.array([[-3/4*math.pi,3/4*math.pi],[-3/4*math.pi,3/4*math.pi],[math.pi/2,math.pi/2]]) # lower and upper bounds of all thruster angles
 		
 		# Define maximum rate of change of actuators
-		self.u_rate_lim = np.array([120,120,0.5]) # [r/s/s,r/s/s,1/s]
+		self.u_rate_lim = np.array([120,120,2.0]) # [r/s/s,r/s/s,1/s]
 		self.alpha_rate_lim = np.array([math.pi*0.70,math.pi*0.70,0.0]) # [rad/sec]
 		
 		# Define initial actuator state
