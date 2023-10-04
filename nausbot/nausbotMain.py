@@ -153,6 +153,10 @@ class Vessel:
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,1.8		]])
+		# Note that the element on location 1,1 has been simplified where 49.2 has been replaced with 1.2kg. 
+		# This is done as this element seemed to cause instability in the simulation. 
+		# Work is needed to figure out why this happened, and reimplement the actual measured values.
+		
 		self.cg = np.array([0,0,0])
 
 		self.M = self.Mrb + self.Ma
