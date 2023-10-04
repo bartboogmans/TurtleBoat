@@ -38,7 +38,6 @@ VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [0.3,0.08,0.00,0,0,0.05
 REFERENCE_RUNTIME_TIMEOUT = 5 # seconds
 PERIOD_REPORT_STATUS = 2 # seconds
 
-
 class ActuationState(Enum):
 	"""
 	Object for managing actuator reference status in a readable manner. 
@@ -353,7 +352,7 @@ def R3_euler_xyz(roll,pitch,yaw):
 	 
 class VesselSimNode(Node):
 	def __init__(self,vesselID_):
-		super().__init__('NausbotMain')
+		super().__init__('TurtleBoatMain')
 		self.vessel = Vessel(VESSEL_ID,POSE_INITIAL,VELOCITY_INITIAL)
 		
 		# Define the QoS profile for the publisher

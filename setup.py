@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'nausbot'
+package_name = 'turtleboat'
 
 setup(
     name=package_name,
@@ -13,14 +13,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='bart',
+    maintainer='bartboogmans',
     maintainer_email='bartboogmans@hotmail.com',
-    description='TODO: Package description',
+    description='simple input output model of a ship - turtlebot but then with vessel dynamics',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'nausbotMain = nausbot.nausbotMain:main'
+            'turtleboatmain = turtleboat.turtleboatmain:main'
         ],
     },
 )
