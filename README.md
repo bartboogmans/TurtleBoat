@@ -17,14 +17,14 @@ This work can be used to generate content (such as: datasets, figures, model-par
 ## Use:
 After installing ROS, cloning this repo & setting ROS environment variables:
 ```shell
-cd repo_location/TurtleBoat
-source devel/setup.bash
+cd ros2_ws
+source install/setup.bash
 rosrun turtleboat main.py <vesselname> <optional parameters>
 rosrun turtleboat main.py titoneri1 --velocity0 0.3 0 0 0 0 0.05
 ```
 
 ## Dynamics
-A 6DOF state space model has been used to simulate motion, although for the example Tito-Neri vessel line only surface level dynamics are taken into account, although the framework supports full motion.
+A 6DOF state space model has been used to simulate motion, although for the example Tito-Neri vessel line only surface level dynamics are taken into account, although the framework supports full motion. The output of the model is in geographic coordinates (latitude, longitude) and heading with respect to north.
 
 ### Coriolis & centripetal forces
 Parameterization of C matrices is done according to eq3.46 from "Handbook of marine craft hydrodynamics and motion control" 2011 by Fossen.
@@ -41,6 +41,9 @@ Evaluating kinetic energy (Kirchhoff's equations of energy, 1869, or Fossen's ha
 $$ T = {1 \over 2} {v^\intercal Mv } $$
 
 with a 2hz timestep this occasionally resulted in volatile (unstable due to positive feedback) simulation results (within 15 simulation seconds). Raising to 200hz solved this (increase of potential was still there but orders of magnitude lower than dampening effects). 
+
+### Parameterization
+The model parameters are based on a ~1m robotic surface vessel, called 'Tito Neri' from the [Researchlab Autonomous Shipping (RAS) Delft](https://github.com/RAS-Delft) with two aft azimuth thrusters and 1 bow thruster. https://rasdelft.nl/
 
 ### Thruster model
 Actuators follow simplistic responses modeled with an absolute rate limiter. The image below shows as an example the propeller velocity reference (green) followed slightly delayed by the modelled behaviour (red)
