@@ -1,7 +1,7 @@
 # TurtleBoat
-Software-in-the-loop-simulator emulating a robotic ship on a ROS 1 network
+Software-in-the-loop-simulator emulating a robotic ship on a ROS network 
 
-Initial developer: Bart Boogmans (bartboogmans@hotmail.com)
+Developed on foxy
  
 ![image](https://user-images.githubusercontent.com/5917472/204604860-5a0f899e-1df0-4577-9d4f-759c835b8c75.png)
 
