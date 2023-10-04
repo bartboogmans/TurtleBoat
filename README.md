@@ -15,13 +15,39 @@ This work can be copied, changed and redistributed as long as documentation rema
 This work can be used to generate content (such as: datasets, figures, model-parameters) for publications (including education deliverables such as msc thesis) given that explicit recognition has been given how this tool and the developers of this work contributed to the resulting work. 
 
 ## Use:
-After installing ROS, cloning this repo & setting ROS environment variables:
+After installing ROS, cloning this repo to your ros workspace, the simulator is started by running 
+```
+rosrun turtleboat turtleboatmain <vesselname> <optional parameters>
+```
+
+for instance by starting a vessel called 'boat1':
 ```shell
 cd ros2_ws
 source install/setup.bash
-rosrun turtleboat main.py <vesselname> <optional parameters>
-rosrun turtleboat main.py titoneri1 --velocity0 0.3 0 0 0 0 0.05
+rosrun turtleboat turtleboatmain boat1
 ```
+
+This yields periodic status updates in that terminal, giving some information on the actual simulation rate, actuation input frequency, position output frequency and heading output frequency
+
+```
+bart@bart-P5820T:~/ros2_ws$ ros2 run turtleboat turtleboatmain boat1
+ boat1 [Vessel Simulator][2.0] f_sim=400.0 f_actuator_ref=0.0 f_pub_pos=5.0 f_pub_heading=16.0
+ boat1 [Vessel Simulator][4.0] f_sim=400.0 f_actuator_ref=0.0 f_pub_pos=5.0 f_pub_heading=16.0
+ boat1 [Vessel Simulator][6.0] f_sim=400.0 f_actuator_ref=0.0 f_pub_pos=5.0 f_pub_heading=16.0
+ boat1 [Vessel Simulator][8.0] f_sim=400.0 f_actuator_ref=0.0 f_pub_pos=5.0 f_pub_heading=16.0
+ boat1 [Vessel Simulator][10.0] f_sim=400.0 f_actuator_ref=0.0 f_pub_pos=5.0 f_pub_heading=16.0
+```
+Opening another terminal and looking at available topics yields 
+```
+bart@bart-P5820T:~$ ros2 topic list
+/boat1/reference/actuation
+/boat1/reference/actuation_prio
+/boat1/state/geopos
+/boat1/state/heading
+```
+Where boat1 can be observed to have topics for input in a normal and an override actuation topic in the 'reference' group. Outputs are under the 'state' group giving geographical coordinate (latitude, longitude) and heading w.r.t. north.
+
+Any controller is now ready to stream on the actuation topic, and use data from the state topics as feedback.
 
 ## Dynamics
 A 6DOF state space model has been used to simulate motion, although for the example Tito-Neri vessel line only surface level dynamics are taken into account, although the framework supports full motion. The output of the model is in geographic coordinates (latitude, longitude) and heading with respect to north.
