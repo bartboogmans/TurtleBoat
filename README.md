@@ -1,4 +1,4 @@
-# Nausbot
+# TurtleBoat
 Software-in-the-loop-simulator emulating a robotic ship on a ROS 1 network
 
 Initial developer: Bart Boogmans (bartboogmans@hotmail.com)
@@ -17,10 +17,10 @@ This work can be used to generate content (such as: datasets, figures, model-par
 ## Use:
 After installing ROS, cloning this repo & setting ROS environment variables:
 ```shell
-cd repo_location/Nausbot
+cd repo_location/TurtleBoat
 source devel/setup.bash
-rosrun nausbot main.py <vesselname> <optional parameters>
-rosrun nausbot main.py titoneri1 --velocity0 0.3 0 0 0 0 0.05
+rosrun turtleboat main.py <vesselname> <optional parameters>
+rosrun turtleboat main.py titoneri1 --velocity0 0.3 0 0 0 0 0.05
 ```
 
 ## Dynamics
