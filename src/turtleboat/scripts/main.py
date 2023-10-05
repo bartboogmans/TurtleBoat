@@ -17,7 +17,7 @@ Possibly also take into account negative eigenvalues of the A matrix, which woul
 Possibly utilize pole zero matching to get a more stable system. (supposedly more accurate results for extra computational cost)
 Use: 
  Install ROS & Setup Environment
- >> rosrun nausbot main.py vessel1name <optional parameters>
+ >> rosrun turtleboat main.py vessel1name <optional parameters>
  
 Initial parameters of the Tito-Neri vessel line are obtained though the publication:
  "Model predictive maneuvering control and energy management for all-electric autonomous ships" https://www.sciencedirect.com/science/article/pii/S0306261919309705
