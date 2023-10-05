@@ -1,6 +1,8 @@
 # TurtleBoat
 Software-in-the-loop-simulator emulating a robotic ship on a ROS 1 network
 
+Developed on ROS Noetic
+
 Initial developer: Bart Boogmans (bartboogmans@hotmail.com)
  
 ![image](https://user-images.githubusercontent.com/5917472/204604860-5a0f899e-1df0-4577-9d4f-759c835b8c75.png)
@@ -19,9 +21,32 @@ After installing ROS, cloning this repo & setting ROS environment variables:
 ```shell
 cd repo_location/TurtleBoat
 source devel/setup.bash
-rosrun turtleboat main.py <vesselname> <optional parameters>
-rosrun turtleboat main.py titoneri1 --velocity0 0.3 0 0 0 0 0.05
+rosrun turtleboat main.py boat1 --velocity0 0.3 0 0 0 0 0.05
 ```
+
+This should yield periodic information of the rates of core functionality of the simulator and related topics. 
+
+Now that the simulation runs we can look at active topics that we can interact with:
+```
+bart@bart-P5820T:~$ rostopic list
+/boat1/diagnostics/sim_state/actuation
+/boat1/diagnostics/sim_state/actuationReference
+/boat1/diagnostics/sim_state/f_actuator
+/boat1/diagnostics/sim_state/f_corioliscentripetal
+/boat1/diagnostics/sim_state/f_drag
+/boat1/diagnostics/sim_state/f_res
+/boat1/diagnostics/sim_state/velocity
+/boat1/reference/actuation
+/boat1/reference/actuation_prio
+/boat1/state/geopos
+/boat1/state/yaw
+```
+
+The main topics of interest are the reference and state groups. The simulator executes any actuator reference published on the reference topics, giving priority to actuation_prio. The resultant pose is published on in the state topics as geographical coordinate (/geopos) and heading (/yaw)
+
+This gives us an input-output model that now interacts with other nodes that attempt to control this virtual ship through the shown topics. 
+
+The diagnostics section gives various information of current simulation status. These are internal states of the simulator which would be 'ground truth' with a real ship, and normally we cannot access them. They are included for diagnostics purposes, and only need to be looked at if one is particularly interested in the internal states. 
 
 ## Dynamics
 A 6DOF state space model has been used to simulate motion, although for the example Tito-Neri vessel line only surface level dynamics are taken into account, although the framework supports full motion.
