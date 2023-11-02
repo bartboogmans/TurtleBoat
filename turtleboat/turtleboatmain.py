@@ -11,6 +11,10 @@ from rclpy.node import Node
 from std_srvs.srv import Trigger as TriggerSrv
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 
+# import imu library
+from sensor_msgs.msg import Imu
+from geometry_msgs.msg import Quaternion
+
 parser = argparse.ArgumentParser()
 
 # Process function arguments
@@ -23,11 +27,14 @@ parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of head
 parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
 parser.add_argument("-raux", "--rateauxiliary", type=float,help="set rate of auxiliary state publishing")
 parser.add_argument("-saux", "--sendauxiliary", type=bool,help="set if auxiliary state should be published")
+parser.add_argument("-imu", "--imuenabled", type=bool,help="set if imu should be published")
+parser.add_argument("-r") # ROS2 arguments
 args, unknown = parser.parse_known_args()
 
 # Set constants
 VESSEL_ID = args.vesselid
 R_EARTH = 6371000 #m
+IMU_ENABLED = args.imuenabled if args.imuenabled else False
 RATE_SIM_TARGET = args.ratesimulator if args.ratesimulator else 400 # Hz
 RATE_PUB_STATE_AUXILIARY = args.rateauxiliary if args.rateauxiliary else 10 # Hz
 RATE_PUB_HEADING = args.rateheading if args.rateheading else 16 # Hz
@@ -37,6 +44,19 @@ POSE_INITIAL = args.pose0 if args.pose0 else [52.00140854178, 4.37186309232,0,0,
 VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [0.3,0.08,0.00,0,0,0.05]
 REFERENCE_RUNTIME_TIMEOUT = 5 # seconds
 PERIOD_REPORT_STATUS = 2 # seconds
+
+#NODENAME = args.namespace +'turtleboat_sim' if args.namespace else 'turtleboat_sim'
+def euler_to_quaternion(roll, pitch, yaw):
+	"""
+	Converts euler angles to quaternions
+	:param: roll, pitch, yaw = euler angles in radians
+	:return: quaternion
+	"""
+	qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+	qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
+	qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
+	qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+	return [qx, qy, qz, qw]
 
 class ActuationState(Enum):
 	"""
@@ -391,6 +411,9 @@ class VesselSimNode(Node):
 			self.actuatorStatePub = self.create_publisher(Float32MultiArray,self.vessel.name+'/diagnostics/sim_state/actuator_state', qos_profile_control_data)
 			self.actuatorRefPub = self.create_publisher(Float32MultiArray,self.vessel.name+'/diagnostics/sim_state/actuator_reference', qos_profile_control_data)
 		
+		if IMU_ENABLED:
+			self.imuPub = self.create_publisher(Imu, 'telemetry/imu', qos_profile_control_data)
+
 		# Create timer objects
 		self.timer_simstep = self.create_timer(1/RATE_SIM_TARGET, self.timer_callback_simstep)
 		self.timer_publish_pos = self.create_timer(1/RATE_PUB_POS, self.timer_callback_publish_pos)
@@ -505,6 +528,20 @@ class VesselSimNode(Node):
 		
 		# Publish message
 		self.headingPub.publish(msg)
+
+		if IMU_ENABLED:
+			msg_imu = Imu()
+			msg_imu.header.stamp = self.get_clock().now().to_msg()
+			msg_imu.header.frame_id = 'world'
+			msg_imu.orientation_covariance = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+			msg_imu.angular_velocity_covariance = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+			msg_imu.linear_acceleration_covariance = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+			quats = euler_to_quaternion(self.vessel.pose[3],self.vessel.pose[4],self.vessel.pose[5])
+			msg_imu.orientation.x = quats[0]
+			msg_imu.orientation.y = quats[1]
+			msg_imu.orientation.z = quats[2]
+			msg_imu.orientation.w = quats[3]
+			self.imuPub.publish(msg_imu)
 
 	def timer_callback_report_status(self):
 		self.print_status()
