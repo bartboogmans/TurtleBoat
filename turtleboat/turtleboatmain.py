@@ -372,7 +372,7 @@ def R3_euler_xyz(roll,pitch,yaw):
 	 
 class VesselSimNode(Node):
 	def __init__(self,vesselID_):
-		super().__init__('TurtleBoatMain')
+		super().__init__(vesselID_+'_turtleboat_sim')
 		self.vessel = Vessel(VESSEL_ID,POSE_INITIAL,VELOCITY_INITIAL)
 		
 		# Define the QoS profile for the publisher
@@ -396,20 +396,20 @@ class VesselSimNode(Node):
 		self.actuationState = ActuationState.timeout
 
 		# Make ros2 publishers and subscribers for main functionality
-		self.positionPub = self.create_publisher(NavSatFix,self.vessel.name+'/state/geopos', qos_profile_control_data)
-		self.headingPub = self.create_publisher(Float32,self.vessel.name+'/state/heading', qos_profile_control_data)
-		self.actuatorReferenceSub_prio = self.create_subscription(Float32MultiArray,self.vessel.name+'/reference/actuation_prio',self.actuationCallback_prio,qos_profile_control_data)
-		self.actuatorReferenceSub = self.create_subscription(Float32MultiArray,self.vessel.name+'/reference/actuation',self.actuationCallback,qos_profile_control_data)
+		self.positionPub = self.create_publisher(NavSatFix, 'telemetry/gnss/fix', qos_profile_control_data)
+		self.headingPub = self.create_publisher(Float32, 'telemetry/heading', qos_profile_control_data)
+		self.actuatorReferenceSub_prio = self.create_subscription(Float32MultiArray, 'reference/actuation_prio',self.actuationCallback_prio,qos_profile_control_data)
+		self.actuatorReferenceSub = self.create_subscription(Float32MultiArray, 'reference/actuation',self.actuationCallback,qos_profile_control_data)
 	
 		# Optional publishers that communicate diagnostics and system state
 		if STREAM_AUXILIARY:
-			self.forcePub_resultant = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_resultant', qos_profile_control_data)
-			self.forcePub_actuator = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_actuator', qos_profile_control_data)
-			self.forcePub_drag = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_drag', qos_profile_control_data)
-			self.forcePub_corioliscentripetal = self.create_publisher(Wrench,self.vessel.name+'/diagnostics/sim_state/f_corioliscentripetal', qos_profile_control_data)
-			self.velocityPub = self.create_publisher(Twist,self.vessel.name+'/diagnostics/sim_state/velocity', qos_profile_control_data)
-			self.actuatorStatePub = self.create_publisher(Float32MultiArray,self.vessel.name+'/diagnostics/sim_state/actuator_state', qos_profile_control_data)
-			self.actuatorRefPub = self.create_publisher(Float32MultiArray,self.vessel.name+'/diagnostics/sim_state/actuator_reference', qos_profile_control_data)
+			self.forcePub_resultant = self.create_publisher(Wrench, 'diagnostics/sim_state/f_resultant', qos_profile_control_data)
+			self.forcePub_actuator = self.create_publisher(Wrench, 'diagnostics/sim_state/f_actuator', qos_profile_control_data)
+			self.forcePub_drag = self.create_publisher(Wrench, 'diagnostics/sim_state/f_drag', qos_profile_control_data)
+			self.forcePub_corioliscentripetal = self.create_publisher(Wrench, 'diagnostics/sim_state/f_corioliscentripetal', qos_profile_control_data)
+			self.velocityPub = self.create_publisher(Twist, 'diagnostics/sim_state/velocity', qos_profile_control_data)
+			self.actuatorStatePub = self.create_publisher(Float32MultiArray, 'diagnostics/sim_state/actuator_state', qos_profile_control_data)
+			self.actuatorRefPub = self.create_publisher(Float32MultiArray, 'diagnostics/sim_state/actuator_reference', qos_profile_control_data)
 		
 		if IMU_ENABLED:
 			self.imuPub = self.create_publisher(Imu, 'telemetry/imu', qos_profile_control_data)
@@ -424,7 +424,7 @@ class VesselSimNode(Node):
 
 
 		# Make ros2 service reset pose and velocity from EmptySrv type
-		self.srv_reset_pose_and_velocity = self.create_service(TriggerSrv,self.vessel.name+'/service/reset_pose_and_velocity',self.srv_reset_pose_and_velocity)
+		self.srv_reset_pose_and_velocity = self.create_service(TriggerSrv, '/service/reset_pose_and_velocity',self.srv_reset_pose_and_velocity)
 
 	def srv_reset_pose_and_velocity(self,request,response):
 		"""
