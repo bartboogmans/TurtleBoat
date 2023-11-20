@@ -20,18 +20,37 @@ parser = argparse.ArgumentParser()
 # Process function arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("vesselid", type=str,help="set vessel identifier")
-parser.add_argument('-p','--pose0', nargs=6,type=float, help='Starting pose')
+parser.add_argument('-p','--pose0',type=str, help='Starting pose')
 parser.add_argument('-v','--velocity0', nargs=6,type=float, help='Starting velocities')
 parser.add_argument("-rsim", "--ratesimulator", type=float,help="set rate of simulation")
 parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of heading publishing")
 parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
 parser.add_argument("-raux", "--rateauxiliary", type=float,help="set rate of auxiliary state publishing")
-parser.add_argument("-saux", "--sendauxiliary", type=bool,help="set if auxiliary state should be published")
+parser.add_argument("-saux", "--sendauxiliary", type=str,help="set if auxiliary state should be published")
 parser.add_argument("-imu", "--imuenabled", type=bool,help="set if imu should be published")
-parser.add_argument("-r") # ROS2 arguments
+parser.add_argument("-r",help='ROS 2 arguments') # ROS2 arguments
 args, unknown = parser.parse_known_args()
 
+print(args)
 # Set constants
+def str2bool(v: str):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+	
+def str2floatArray(v: str):
+	if isinstance(v, list):
+		return v
+	if isinstance(v, str):
+		return [float(x) for x in v.split(',')]
+	else:
+		raise argparse.ArgumentTypeError('Float array expected.')
+	
 VESSEL_ID = args.vesselid
 R_EARTH = 6371000 #m
 IMU_ENABLED = args.imuenabled if args.imuenabled else False
@@ -39,13 +58,13 @@ RATE_SIM_TARGET = args.ratesimulator if args.ratesimulator else 400 # Hz
 RATE_PUB_STATE_AUXILIARY = args.rateauxiliary if args.rateauxiliary else 10 # Hz
 RATE_PUB_HEADING = args.rateheading if args.rateheading else 16 # Hz
 RATE_PUB_POS = args.rateposition if args.rateposition else 5 # Hz
-STREAM_AUXILIARY = args.sendauxiliary if args.sendauxiliary else False
-POSE_INITIAL = args.pose0 if args.pose0 else [52.00140854178, 4.37186309232,0,0,0,math.pi/4]
+STREAM_AUXILIARY = str2bool(args.sendauxiliary) if args.sendauxiliary else False
+POSE_INITIAL = str2floatArray(args.pose0) if args.pose0 else [52.00140854178, 4.37186309232,0,0,0,math.pi/4]
+print(POSE_INITIAL)
 VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [0.3,0.08,0.00,0,0,0.05]
 REFERENCE_RUNTIME_TIMEOUT = 5 # seconds
 PERIOD_REPORT_STATUS = 2 # seconds
 
-#NODENAME = args.namespace +'turtleboat_sim' if args.namespace else 'turtleboat_sim'
 def euler_to_quaternion(roll, pitch, yaw):
 	"""
 	Converts euler angles to quaternions
