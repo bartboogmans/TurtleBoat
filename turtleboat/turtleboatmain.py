@@ -174,7 +174,7 @@ class Vessel:
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
-									[0		,-1.0952	,0		,0		,0		,0.525*0.20	 ]])
+									[0		,-1.0952	,0		,0		,0		,0.525*0.80	 ]])
 
 		self.Mrb = np.array([		[16.9		,0		,0		,0		,0		,0		],
 									[0		,16.9	,0		,0		,0		,0		],
@@ -185,8 +185,8 @@ class Vessel:
 		# Note that the current diagonals on inertia in pitch and roll direction are 1. These values are not measured or taken up in the current model, but these points have to be nonzero to make this matrix invertible. 
 
 		self.Ma = np.array([		[1.2		,0		,0		,0		,0		,0		],
-									[0		,1.2		,0		,0		,0		,0		],
-									#[0		,49.2		,0		,0		,0		,0		],
+									#[0		,1.2		,0		,0		,0		,0		],
+									[0		,49.2		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
