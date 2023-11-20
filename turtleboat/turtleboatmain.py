@@ -371,8 +371,8 @@ def R3_euler_xyz(roll,pitch,yaw):
 						[s1*s3-c1*c3*s2, 	c3*s1+c1*s2*s3, 	c1*c2]]  	)
 	 
 class VesselSimNode(Node):
-	def __init__(self,vesselID_):
-		super().__init__(vesselID_+'_turtleboat_sim')
+	def __init__(self):
+		super().__init__(VESSEL_ID+'_turtleboat_sim')
 		self.vessel = Vessel(VESSEL_ID,POSE_INITIAL,VELOCITY_INITIAL)
 		
 		# Define the QoS profile for the publisher
@@ -685,7 +685,7 @@ class VesselSimNode(Node):
 def main(args=None):
 	rclpy.init(args=args)
 
-	sim = VesselSimNode(VESSEL_ID)
+	sim = VesselSimNode()
 
 	# Start the nodes processing thread
 	rclpy.spin(sim)
