@@ -636,16 +636,15 @@ class VesselSimNode(Node):
 
 		# print vessel name in blue following time, frequencies of mainloop, simstep and actuator reference
 		statusstring = ' ' + Statuscolors.OKBLUE + self.vessel.name + Statuscolors.NORMAL+ \
-					' [Vessel Simulator]['+str(round(time.time()-self.timestamp_start,2))+ ']' + \
 					' f_sim='+freq_sim_step_str+ \
 					' f_actuator_ref='+freq_actuator_reference_str+ \
 					' f_pub_pos='+freq_pub_pos_str+ \
 					' f_pub_heading='+freq_pub_heading_str
 		
 		if STREAM_AUXILIARY:
-			print(statusstring+ ' f_pub_aux='+freq_pub_aux_str)
+			self.get_logger().info(statusstring+ ' f_pub_aux='+freq_pub_aux_str)
 		else:
-			print(statusstring)
+			self.get_logger().info(statusstring)
 
 	def resetTrackers(self):
 		self.tracker_iteration_simstep = 0
