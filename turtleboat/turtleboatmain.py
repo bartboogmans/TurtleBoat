@@ -20,18 +20,36 @@ parser = argparse.ArgumentParser()
 # Process function arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("vesselid", type=str,help="set vessel identifier")
-parser.add_argument('-p','--pose0', nargs=6,type=float, help='Starting pose')
+parser.add_argument('-p','--pose0',type=str, help='Starting pose')
 parser.add_argument('-v','--velocity0', nargs=6,type=float, help='Starting velocities')
 parser.add_argument("-rsim", "--ratesimulator", type=float,help="set rate of simulation")
 parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of heading publishing")
 parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
 parser.add_argument("-raux", "--rateauxiliary", type=float,help="set rate of auxiliary state publishing")
-parser.add_argument("-saux", "--sendauxiliary", type=bool,help="set if auxiliary state should be published")
+parser.add_argument("-saux", "--sendauxiliary", type=str,help="set if auxiliary state should be published")
 parser.add_argument("-imu", "--imuenabled", type=bool,help="set if imu should be published")
-parser.add_argument("-r") # ROS2 arguments
+parser.add_argument("-r",help='ROS 2 arguments') # ROS2 arguments
 args, unknown = parser.parse_known_args()
 
 # Set constants
+def str2bool(v: str):
+	if isinstance(v, bool):
+		return v
+	if v.lower() in ('yes', 'true', 't', 'y', '1'):
+		return True
+	elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+		return False
+	else:
+		raise argparse.ArgumentTypeError('Boolean value expected.')
+	
+def str2floatArray(v: str):
+	if isinstance(v, list):
+		return v
+	if isinstance(v, str):
+		return [float(x) for x in v.split(',')]
+	else:
+		raise argparse.ArgumentTypeError('Float array expected.')
+	
 VESSEL_ID = args.vesselid
 R_EARTH = 6371000 #m
 IMU_ENABLED = args.imuenabled if args.imuenabled else False
@@ -39,13 +57,12 @@ RATE_SIM_TARGET = args.ratesimulator if args.ratesimulator else 400 # Hz
 RATE_PUB_STATE_AUXILIARY = args.rateauxiliary if args.rateauxiliary else 10 # Hz
 RATE_PUB_HEADING = args.rateheading if args.rateheading else 16 # Hz
 RATE_PUB_POS = args.rateposition if args.rateposition else 5 # Hz
-STREAM_AUXILIARY = args.sendauxiliary if args.sendauxiliary else False
-POSE_INITIAL = args.pose0 if args.pose0 else [52.00140854178, 4.37186309232,0,0,0,math.pi/4]
-VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [0.3,0.08,0.00,0,0,0.05]
+STREAM_AUXILIARY = str2bool(args.sendauxiliary) if args.sendauxiliary else False
+POSE_INITIAL = str2floatArray(args.pose0) if args.pose0 else [52.00140854178, 4.37186309232,0,0,0,math.pi/4]
+VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [np.random.uniform(-0.4,0.4),np.random.uniform(-0.2,0.2),0.00,0,0,np.random.uniform(-0.05,0.05)]
 REFERENCE_RUNTIME_TIMEOUT = 5 # seconds
 PERIOD_REPORT_STATUS = 2 # seconds
 
-#NODENAME = args.namespace +'turtleboat_sim' if args.namespace else 'turtleboat_sim'
 def euler_to_quaternion(roll, pitch, yaw):
 	"""
 	Converts euler angles to quaternions
@@ -155,7 +172,7 @@ class Vessel:
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
-									[0		,-1.0952	,0		,0		,0		,0.525*0.20	 ]])
+									[0		,-1.0952	,0		,0		,0		,0.525*0.80	 ]])
 
 		self.Mrb = np.array([		[16.9		,0		,0		,0		,0		,0		],
 									[0		,16.9	,0		,0		,0		,0		],
@@ -166,8 +183,8 @@ class Vessel:
 		# Note that the current diagonals on inertia in pitch and roll direction are 1. These values are not measured or taken up in the current model, but these points have to be nonzero to make this matrix invertible. 
 
 		self.Ma = np.array([		[1.2		,0		,0		,0		,0		,0		],
-									[0		,1.2		,0		,0		,0		,0		],
-									#[0		,49.2		,0		,0		,0		,0		],
+									#[0		,1.2		,0		,0		,0		,0		],
+									[0		,49.2		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
@@ -371,8 +388,8 @@ def R3_euler_xyz(roll,pitch,yaw):
 						[s1*s3-c1*c3*s2, 	c3*s1+c1*s2*s3, 	c1*c2]]  	)
 	 
 class VesselSimNode(Node):
-	def __init__(self,vesselID_):
-		super().__init__(vesselID_+'_turtleboat_sim')
+	def __init__(self):
+		super().__init__(VESSEL_ID+'_turtleboat_sim')
 		self.vessel = Vessel(VESSEL_ID,POSE_INITIAL,VELOCITY_INITIAL)
 		
 		# Define the QoS profile for the publisher
@@ -569,6 +586,9 @@ class VesselSimNode(Node):
 			if time.time() -self.timestamp_last_actuator_ref_callback > REFERENCE_RUNTIME_TIMEOUT:
 				self.actuationState = ActuationState.timeout
 				print('Actuation reference timed out')
+				stopmsg = Float32MultiArray()
+				stopmsg.data = [0.0,0.0,0.0,0.0,0.0]
+				self.process_actuation(stopmsg)
 		
 	def process_actuation(self,msg):
 		"""
@@ -617,16 +637,15 @@ class VesselSimNode(Node):
 
 		# print vessel name in blue following time, frequencies of mainloop, simstep and actuator reference
 		statusstring = ' ' + Statuscolors.OKBLUE + self.vessel.name + Statuscolors.NORMAL+ \
-					' [Vessel Simulator]['+str(round(time.time()-self.timestamp_start,2))+ ']' + \
 					' f_sim='+freq_sim_step_str+ \
 					' f_actuator_ref='+freq_actuator_reference_str+ \
 					' f_pub_pos='+freq_pub_pos_str+ \
 					' f_pub_heading='+freq_pub_heading_str
 		
 		if STREAM_AUXILIARY:
-			print(statusstring+ ' f_pub_aux='+freq_pub_aux_str)
+			self.get_logger().info(statusstring+ ' f_pub_aux='+freq_pub_aux_str)
 		else:
-			print(statusstring)
+			self.get_logger().info(statusstring)
 
 	def resetTrackers(self):
 		self.tracker_iteration_simstep = 0
@@ -685,7 +704,7 @@ class VesselSimNode(Node):
 def main(args=None):
 	rclpy.init(args=args)
 
-	sim = VesselSimNode(VESSEL_ID)
+	sim = VesselSimNode()
 
 	# Start the nodes processing thread
 	rclpy.spin(sim)
