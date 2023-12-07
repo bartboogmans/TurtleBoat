@@ -31,17 +31,16 @@ parser.add_argument("-imu", "--imuenabled", type=bool,help="set if imu should be
 parser.add_argument("-r",help='ROS 2 arguments') # ROS2 arguments
 args, unknown = parser.parse_known_args()
 
-print(args)
 # Set constants
 def str2bool(v: str):
-    if isinstance(v, bool):
-        return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+	if isinstance(v, bool):
+		return v
+	if v.lower() in ('yes', 'true', 't', 'y', '1'):
+		return True
+	elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+		return False
+	else:
+		raise argparse.ArgumentTypeError('Boolean value expected.')
 	
 def str2floatArray(v: str):
 	if isinstance(v, list):
@@ -60,8 +59,7 @@ RATE_PUB_HEADING = args.rateheading if args.rateheading else 16 # Hz
 RATE_PUB_POS = args.rateposition if args.rateposition else 5 # Hz
 STREAM_AUXILIARY = str2bool(args.sendauxiliary) if args.sendauxiliary else False
 POSE_INITIAL = str2floatArray(args.pose0) if args.pose0 else [52.00140854178, 4.37186309232,0,0,0,math.pi/4]
-print(POSE_INITIAL)
-VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [0.3,0.08,0.00,0,0,0.05]
+VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [np.random.uniform(-0.4,0.4),np.random.uniform(-0.2,0.2),0.00,0,0,np.random.uniform(-0.05,0.05)]
 REFERENCE_RUNTIME_TIMEOUT = 5 # seconds
 PERIOD_REPORT_STATUS = 2 # seconds
 
