@@ -392,13 +392,6 @@ class VesselSimNode(Node):
 		super().__init__(VESSEL_ID+'_turtleboat_sim')
 		self.vessel = Vessel(VESSEL_ID,POSE_INITIAL,VELOCITY_INITIAL)
 		
-		# Define the QoS profile for the publisher
-		qos_profile_control_data = QoSProfile(
-			reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
-			history=QoSHistoryPolicy.RMW_QOS_POLICY_HISTORY_KEEP_LAST,
-			depth=1
-		)
-		
 		# Set up event scheduling
 		self.timestamp_start = time.time()
 		self.timestamp_last_simstep = time.time()
@@ -413,23 +406,23 @@ class VesselSimNode(Node):
 		self.actuationState = ActuationState.timeout
 
 		# Make ros2 publishers and subscribers for main functionality
-		self.positionPub = self.create_publisher(NavSatFix, 'telemetry/gnss/fix', qos_profile_control_data)
-		self.headingPub = self.create_publisher(Float32, 'telemetry/heading', qos_profile_control_data)
-		self.actuatorReferenceSub_prio = self.create_subscription(Float32MultiArray, 'reference/actuation_prio',self.actuationCallback_prio,qos_profile_control_data)
-		self.actuatorReferenceSub = self.create_subscription(Float32MultiArray, 'reference/actuation',self.actuationCallback,qos_profile_control_data)
+		self.positionPub = self.create_publisher(NavSatFix, 'telemetry/gnss/fix', 10)
+		self.headingPub = self.create_publisher(Float32, 'telemetry/heading', 10)
+		self.actuatorReferenceSub_prio = self.create_subscription(Float32MultiArray, 'reference/actuation_prio',self.actuationCallback_prio,10)
+		self.actuatorReferenceSub = self.create_subscription(Float32MultiArray, 'reference/actuation',self.actuationCallback,10)
 	
 		# Optional publishers that communicate diagnostics and system state
 		if STREAM_AUXILIARY:
-			self.forcePub_resultant = self.create_publisher(Wrench, 'diagnostics/sim_state/f_resultant', qos_profile_control_data)
-			self.forcePub_actuator = self.create_publisher(Wrench, 'diagnostics/sim_state/f_actuator', qos_profile_control_data)
-			self.forcePub_drag = self.create_publisher(Wrench, 'diagnostics/sim_state/f_drag', qos_profile_control_data)
-			self.forcePub_corioliscentripetal = self.create_publisher(Wrench, 'diagnostics/sim_state/f_corioliscentripetal', qos_profile_control_data)
-			self.velocityPub = self.create_publisher(Twist, 'diagnostics/sim_state/velocity', qos_profile_control_data)
-			self.actuatorStatePub = self.create_publisher(Float32MultiArray, 'diagnostics/sim_state/actuator_state', qos_profile_control_data)
-			self.actuatorRefPub = self.create_publisher(Float32MultiArray, 'diagnostics/sim_state/actuator_reference', qos_profile_control_data)
+			self.forcePub_resultant = self.create_publisher(Wrench, 'diagnostics/sim_state/f_resultant', 10)
+			self.forcePub_actuator = self.create_publisher(Wrench, 'diagnostics/sim_state/f_actuator', 10)
+			self.forcePub_drag = self.create_publisher(Wrench, 'diagnostics/sim_state/f_drag', 10)
+			self.forcePub_corioliscentripetal = self.create_publisher(Wrench, 'diagnostics/sim_state/f_corioliscentripetal', 10)
+			self.velocityPub = self.create_publisher(Twist, 'diagnostics/sim_state/velocity', 10)
+			self.actuatorStatePub = self.create_publisher(Float32MultiArray, 'diagnostics/sim_state/actuator_state', 10)
+			self.actuatorRefPub = self.create_publisher(Float32MultiArray, 'diagnostics/sim_state/actuator_reference', 10)
 		
 		if IMU_ENABLED:
-			self.imuPub = self.create_publisher(Imu, 'telemetry/imu', qos_profile_control_data)
+			self.imuPub = self.create_publisher(Imu, 'telemetry/imu', 10)
 
 		# Create timer objects
 		self.timer_simstep = self.create_timer(1/RATE_SIM_TARGET, self.timer_callback_simstep)
