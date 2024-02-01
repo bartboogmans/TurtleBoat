@@ -144,19 +144,19 @@ class Vessel:
 		self.alpha_ref = np.zeros(self.ntrh,dtype=np.float64)
 	
 		# Define limits of actuators
-		self.u_lims = np.array([[-60,60],[-60,60],[-1,1]]) # lower and upper bounds of all thruster outputs
-		self.alpha_lims = np.array([[-3/4*math.pi,3/4*math.pi],[-3/4*math.pi,3/4*math.pi],[math.pi/2,math.pi/2]]) # lower and upper bounds of all thruster angles
+		self.u_lims = np.array([[-60,60],[-60,60],[-1.0,1.0]],dtype=np.float64) # lower and upper bounds of all thruster outputs
+		self.alpha_lims = np.array([[-3/4*math.pi,3/4*math.pi],[-3/4*math.pi,3/4*math.pi],[math.pi/2,math.pi/2]],dtype=np.float64) # lower and upper bounds of all thruster angles
 		
 		# Define maximum rate of change of actuators
-		self.u_rate_lim = np.array([120,120,2.0]) # [r/s/s,r/s/s,1/s]
-		self.alpha_rate_lim = np.array([math.pi*0.70,math.pi*0.70,0.0]) # [rad/sec]
+		self.u_rate_lim = np.array([120,120,2.0],dtype=np.float64) # [r/s/s,r/s/s,1/s]
+		self.alpha_rate_lim = np.array([math.pi*0.70,math.pi*0.70,0.0],dtype=np.float64) # [rad/sec]
 		
 		# Define initial actuator state
 		self.u = np.zeros(3,dtype=np.float64) # initial actuator output
-		self.alpha = np.array([0.0,0.0,math.pi/2]) # initial actuator orientation
+		self.alpha = np.array([0.0,0.0,math.pi/2],dtype=np.float64) # initial actuator orientation
 
 		# Define position of thrusters wrt Center-Origin (not necessarily CG)
-		self.r_thruster = np.array([[-0.42,-0.08,0],[-0.42,+0.08,0],[0.28,0.00,0]])
+		self.r_thruster = np.array([[-0.42,-0.08,0],[-0.42,+0.08,0],[0.28,0.00,0]],dtype=np.float64)
 		
 		## Size
 		self.l = 0.97
@@ -172,14 +172,14 @@ class Vessel:
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
-									[0		,-1.0952	,0		,0		,0		,0.525*0.20	 ]])
+									[0		,-1.0952	,0		,0		,0		,0.525*0.20	 ]],dtype=np.float64)
 
 		self.Mrb = np.array([		[16.9		,0		,0		,0		,0		,0		],
 									[0		,16.9	,0		,0		,0		,0		],
 									[0		,0		,16.9		,0		,0		,0		],
 									[0		,0		,0		,1		,0		,0		],
 									[0		,0		,0		,0		,1		,0		],
-									[0		,0		,0		,0		,0		,0.51		]])
+									[0		,0		,0		,0		,0		,0.51		]],dtype=np.float64)
 		# Note that the current diagonals on inertia in pitch and roll direction are 1. These values are not measured or taken up in the current model, but these points have to be nonzero to make this matrix invertible. 
 
 		self.Ma = np.array([		[1.2		,0		,0		,0		,0		,0		],
@@ -188,12 +188,12 @@ class Vessel:
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
 									[0		,0		,0		,0		,0		,0		],
-									[0		,0		,0		,0		,0		,1.8		]])
+									[0		,0		,0		,0		,0		,1.8		]],dtype=np.float64)
 		# Note that the element on location 1,1 has been simplified where 49.2 has been replaced with 1.2kg. 
 		# This is done as this element seemed to cause instability in the simulation. 
 		# Work is needed to figure out why this happened, and reimplement the actual measured values.
 		
-		self.cg = np.array([0,0,0])
+		self.cg = np.array([0,0,0],dtype=np.float64)
 
 		self.M = self.Mrb + self.Ma
 
@@ -219,7 +219,7 @@ class Vessel:
 		:param: none
 		:return: resultant force/torque vector
 		"""
-		Fres = np.array([0,0,0,0,0,0])
+		Fres = np.array([0,0,0,0,0,0],dtype=np.float64)
 		for nthr in range(self.ntrh):
 			
 			# Check bounds of maximum thrust usage
@@ -235,14 +235,14 @@ class Vessel:
 				self.alpha[nthr] = self.alpha_lims[nthr][1]
 
 			# Calculate response
-			Fthr_i_thrLocal = np.array([self.thrustToForce[nthr](self.u[nthr]),0,0])
+			Fthr_i_thrLocal = np.array([self.thrustToForce[nthr](self.u[nthr]),0,0],dtype=np.float64)
 			Fthr_i_body = np.matmul(R3_euler_xyz(0,0,self.alpha[nthr]),Fthr_i_thrLocal)
 			mi = cross3(self.r_thruster[nthr],Fthr_i_body)
 
 			
 			
 			# Add up response for each thruster
-			Fres = Fres + np.array([Fthr_i_body[0],Fthr_i_body[1],Fthr_i_body[2],mi[0],mi[1],mi[2]])
+			Fres = Fres + np.array([Fthr_i_body[0],Fthr_i_body[1],Fthr_i_body[2],mi[0],mi[1],mi[2]],dtype=np.float64)
 		return Fres
 
 	def change_actuators(self,dt):
@@ -335,7 +335,7 @@ def cross3(a:np.ndarray,b:np.ndarray):
 	""" 
 	Calculates the cross product of two 3D vectors
 	"""
-	return np.array([a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]])
+	return np.array([a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],dtype=np.float64)
 
 def getCoriolisCentripetal(v:np.ndarray,M:np.ndarray):
 	"""
@@ -367,7 +367,7 @@ def skew(v:np.ndarray):
 	"""
 	return np.array([	[0		,-v[2]	,v[1]	],
 						[v[2]		,0		,-v[0]],
-						[-v[1]	,v[0]		,0	]])
+						[-v[1]	,v[0]		,0	]],dtype=np.float64)
 
 def R3_euler_xyz(roll,pitch,yaw):
 	"""
@@ -385,7 +385,7 @@ def R3_euler_xyz(roll,pitch,yaw):
 
 	return np.array([	[c2*c3, 			-c2*s3, 			s2], 		\
 				   		[c1*s3+c3*s1*s2, 	c1*c3-s1*s2*s3, 	-c2*s1], 	\
-						[s1*s3-c1*c3*s2, 	c3*s1+c1*s2*s3, 	c1*c2]]  	)
+						[s1*s3-c1*c3*s2, 	c3*s1+c1*s2*s3, 	c1*c2]]  	,dtype=np.float64)
 	 
 class VesselSimNode(Node):
 	def __init__(self):
