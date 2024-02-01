@@ -20,14 +20,14 @@ parser = argparse.ArgumentParser()
 # Process function arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("vesselid", type=str,help="set vessel identifier")
-parser.add_argument('-p','--pose0',type=str, help='Starting pose')
+#parser.add_argument('-po','--pose0',type=str, help='Starting pose')
 parser.add_argument('-v','--velocity0', nargs=6,type=float, help='Starting velocities')
 parser.add_argument("-rsim", "--ratesimulator", type=float,help="set rate of simulation")
 parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of heading publishing")
 parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
 parser.add_argument("-raux", "--rateauxiliary", type=float,help="set rate of auxiliary state publishing")
 parser.add_argument("-saux", "--sendauxiliary", type=str,help="set if auxiliary state should be published")
-parser.add_argument("-imu", "--imuenabled", type=bool,help="set if imu should be published")
+#parser.add_argument("-imu", "--imuenabled", type=bool,help="set if imu should be published")
 parser.add_argument("-r",help='ROS 2 arguments') # ROS2 arguments
 args, unknown = parser.parse_known_args()
 
@@ -52,13 +52,13 @@ def str2floatArray(v: str):
 	
 VESSEL_ID = args.vesselid
 R_EARTH = 6371000 #m
-IMU_ENABLED = args.imuenabled if args.imuenabled else False
+#IMU_ENABLED = args.imuenabled if args.imuenabled else False
 RATE_SIM_TARGET = args.ratesimulator if args.ratesimulator else 400 # Hz
 RATE_PUB_STATE_AUXILIARY = args.rateauxiliary if args.rateauxiliary else 10 # Hz
 RATE_PUB_HEADING = args.rateheading if args.rateheading else 16 # Hz
 RATE_PUB_POS = args.rateposition if args.rateposition else 5 # Hz
 STREAM_AUXILIARY = str2bool(args.sendauxiliary) if args.sendauxiliary else False
-POSE_INITIAL = str2floatArray(args.pose0) if args.pose0 else [52.00140854178, 4.37186309232,0,0,0,math.pi/4]
+POSE_INITIAL = [52.00140854178, 4.37186309232,0,0,0,math.pi/4]
 VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [np.random.uniform(-0.4,0.4),np.random.uniform(-0.2,0.2),0.00,0,0,np.random.uniform(-0.05,0.05)]
 REFERENCE_RUNTIME_TIMEOUT = 5 # seconds
 PERIOD_REPORT_STATUS = 2 # seconds
@@ -390,6 +390,24 @@ def R3_euler_xyz(roll,pitch,yaw):
 class VesselSimNode(Node):
 	def __init__(self):
 		super().__init__(VESSEL_ID+'_turtleboat_sim')
+		
+		self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('simulator_frequency_target', 400),
+				('rate_publish_position', 5),
+				('rate_publish_heading', 16),
+				('rate_publish_auxiliary_state', 10),
+				('stream_auxiliary_state', False),
+				('initial_pose', [52.00140854178, 4.37186309232,0.0,0.0,0.0,math.pi/4]),
+				('initial_velocity', [np.random.uniform(-0.4,0.4),np.random.uniform(-0.2,0.2),0.00,0.0,0.0,np.random.uniform(-0.05,0.05)]),
+				('imu_enabled', True),
+				('reference_runtime_timeout', 5),
+				('period_report_status', 2)
+				]
+        )
+		
+		
 		self.vessel = Vessel(VESSEL_ID,POSE_INITIAL,VELOCITY_INITIAL)
 		
 		# Set up event scheduling
@@ -421,7 +439,7 @@ class VesselSimNode(Node):
 			self.actuatorStatePub = self.create_publisher(Float32MultiArray, 'diagnostics/sim_state/actuator_state', 10)
 			self.actuatorRefPub = self.create_publisher(Float32MultiArray, 'diagnostics/sim_state/actuator_reference', 10)
 		
-		if IMU_ENABLED:
+		if self.get_parameter('imu_enabled').value:
 			self.imuPub = self.create_publisher(Imu, 'telemetry/imu', 10)
 
 		# Create timer objects
@@ -539,7 +557,7 @@ class VesselSimNode(Node):
 		# Publish message
 		self.headingPub.publish(msg)
 
-		if IMU_ENABLED:
+		if self.get_parameter('imu_enabled').value:
 			msg_imu = Imu()
 			msg_imu.header.stamp = self.get_clock().now().to_msg()
 			msg_imu.header.frame_id = 'world'
@@ -706,9 +724,5 @@ def main(args=None):
 	sim.destroy_node()
 	rclpy.shutdown()
 
-
 if __name__ == '__main__':
 	main()
-	
-	
-	
