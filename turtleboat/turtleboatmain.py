@@ -15,53 +15,7 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
-parser = argparse.ArgumentParser()
-
-# Process function arguments
-parser = argparse.ArgumentParser()
-parser.add_argument("vesselid", type=str,help="set vessel identifier")
-#parser.add_argument('-po','--pose0',type=str, help='Starting pose')
-parser.add_argument('-v','--velocity0', nargs=6,type=float, help='Starting velocities')
-parser.add_argument("-rsim", "--ratesimulator", type=float,help="set rate of simulation")
-parser.add_argument("-rhead", "--rateheading", type=float,help="set rate of heading publishing")
-parser.add_argument("-rpos", "--rateposition", type=float,help="set rate of position publishing")
-parser.add_argument("-raux", "--rateauxiliary", type=float,help="set rate of auxiliary state publishing")
-parser.add_argument("-saux", "--sendauxiliary", type=str,help="set if auxiliary state should be published")
-#parser.add_argument("-imu", "--imuenabled", type=bool,help="set if imu should be published")
-parser.add_argument("-r",help='ROS 2 arguments') # ROS2 arguments
-args, unknown = parser.parse_known_args()
-
-# Set constants
-def str2bool(v: str):
-	if isinstance(v, bool):
-		return v
-	if v.lower() in ('yes', 'true', 't', 'y', '1'):
-		return True
-	elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-		return False
-	else:
-		raise argparse.ArgumentTypeError('Boolean value expected.')
-	
-def str2floatArray(v: str):
-	if isinstance(v, list):
-		return v
-	if isinstance(v, str):
-		return [float(x) for x in v.split(',')]
-	else:
-		raise argparse.ArgumentTypeError('Float array expected.')
-	
-VESSEL_ID = args.vesselid
 R_EARTH = 6371000 #m
-#IMU_ENABLED = args.imuenabled if args.imuenabled else False
-RATE_SIM_TARGET = args.ratesimulator if args.ratesimulator else 400 # Hz
-RATE_PUB_STATE_AUXILIARY = args.rateauxiliary if args.rateauxiliary else 10 # Hz
-RATE_PUB_HEADING = args.rateheading if args.rateheading else 16 # Hz
-RATE_PUB_POS = args.rateposition if args.rateposition else 5 # Hz
-STREAM_AUXILIARY = str2bool(args.sendauxiliary) if args.sendauxiliary else False
-POSE_INITIAL = [52.00140854178, 4.37186309232,0,0,0,math.pi/4]
-VELOCITY_INITIAL = args.velocity0 if args.velocity0 else [np.random.uniform(-0.4,0.4),np.random.uniform(-0.2,0.2),0.00,0,0,np.random.uniform(-0.05,0.05)]
-REFERENCE_RUNTIME_TIMEOUT = 5 # seconds
-PERIOD_REPORT_STATUS = 2 # seconds
 
 def euler_to_quaternion(roll, pitch, yaw):
 	"""
@@ -117,7 +71,7 @@ class Vessel:
 	Class representing a Tito Neri model scale vessel
 	"""
 	
-	def __init__(self,name_,pose_,vel_):
+	def __init__(self,pose_,vel_):
 		"""
 		Constructor for the vessel class
 		:param name_: name of the vessel
@@ -128,7 +82,6 @@ class Vessel:
 
 		self.pose = np.array(pose_,dtype=np.float64) # [lat long altitude pitch roll yaw] rotations w.r.t. north east down
 		self.vel = np.array(vel_,dtype=np.float32) # [u,v,w,p,q,r]
-		self.name = name_.replace(" ","_")
 
 		## Actuator parameters
 		# Each thruster (rotatable or not) is seen as a single actuator in this number. Rotatable thrusters are seen as a single actuator with power-input (generally propeller velocity) and an orientation (generally azimuth angle).
@@ -389,27 +342,27 @@ def R3_euler_xyz(roll,pitch,yaw):
 	 
 class VesselSimNode(Node):
 	def __init__(self):
-		super().__init__(VESSEL_ID+'_turtleboat_sim')
+		super().__init__('turtleboat_sim')
 		
 		self.declare_parameters(
             namespace='',
             parameters=[
-                ('simulator_frequency_target', 400),
-				('rate_publish_position', 5),
-				('rate_publish_heading', 16),
-				('rate_publish_auxiliary_state', 10),
+                ('simulator_frequency_target', 400.0),
+				('rate_publish_position', 5.0),
+				('rate_publish_heading', 16.0),
+				('rate_publish_auxiliary_state', 10.0),
 				('stream_auxiliary_state', False),
 				('initial_pose', [52.00140854178, 4.37186309232,0.0,0.0,0.0,math.pi/4]),
 				('initial_velocity', [np.random.uniform(-0.4,0.4),np.random.uniform(-0.2,0.2),0.00,0.0,0.0,np.random.uniform(-0.05,0.05)]),
 				('imu_enabled', True),
-				('reference_runtime_timeout', 5),
-				('period_report_status', 2)
+				('reference_runtime_timeout', 5.0),
+				('period_report_status', 2.0)
 				]
         )
-		
-		
-		self.vessel = Vessel(VESSEL_ID,POSE_INITIAL,VELOCITY_INITIAL)
-		
+
+		# Set up vessel object
+		self.vessel = Vessel(self.get_parameter("initial_pose").get_parameter_value().double_array_value,self.get_parameter("initial_velocity").get_parameter_value().double_array_value)
+	
 		# Set up event scheduling
 		self.timestamp_start = time.time()
 		self.timestamp_last_simstep = time.time()
@@ -430,7 +383,7 @@ class VesselSimNode(Node):
 		self.actuatorReferenceSub = self.create_subscription(Float32MultiArray, 'reference/actuation',self.actuationCallback,10)
 	
 		# Optional publishers that communicate diagnostics and system state
-		if STREAM_AUXILIARY:
+		if self.get_parameter("stream_auxiliary_state").get_parameter_value().bool_value:
 			self.forcePub_resultant = self.create_publisher(Wrench, 'diagnostics/sim_state/f_resultant', 10)
 			self.forcePub_actuator = self.create_publisher(Wrench, 'diagnostics/sim_state/f_actuator', 10)
 			self.forcePub_drag = self.create_publisher(Wrench, 'diagnostics/sim_state/f_drag', 10)
@@ -443,23 +396,23 @@ class VesselSimNode(Node):
 			self.imuPub = self.create_publisher(Imu, 'telemetry/imu', 10)
 
 		# Create timer objects
-		self.timer_simstep = self.create_timer(1/RATE_SIM_TARGET, self.timer_callback_simstep)
-		self.timer_publish_pos = self.create_timer(1/RATE_PUB_POS, self.timer_callback_publish_pos)
-		self.timer_publish_heading = self.create_timer(1/RATE_PUB_HEADING, self.timer_callback_publish_heading)
-		self.timer_report_status = self.create_timer(PERIOD_REPORT_STATUS, self.timer_callback_report_status)
-		if STREAM_AUXILIARY:
-			self.timer_publish_auxiliary = self.create_timer(1/RATE_PUB_STATE_AUXILIARY, self.timer_callback_publish_auxiliary)
+		self.timer_simstep = self.create_timer(1/self.get_parameter("simulator_frequency_target").get_parameter_value().double_value, self.timer_callback_simstep)
+		self.timer_publish_pos = self.create_timer(1/self.get_parameter("rate_publish_position").get_parameter_value().double_value, self.timer_callback_publish_pos)
+		self.timer_publish_heading = self.create_timer(1/self.get_parameter("rate_publish_heading").get_parameter_value().double_value, self.timer_callback_publish_heading)
+		self.timer_report_status = self.create_timer(self.get_parameter("period_report_status").get_parameter_value().double_value, self.timer_callback_report_status)
+		if self.get_parameter("stream_auxiliary_state").get_parameter_value().bool_value:
+			self.timer_publish_auxiliary = self.create_timer(1/self.get_parameter("rate_publish_auxiliary_state").get_parameter_value().double_value, self.timer_callback_publish_auxiliary)
 
 
 		# Make ros2 service reset pose and velocity from EmptySrv type
 		self.srv_reset_pose_and_velocity = self.create_service(TriggerSrv, '/service/reset_pose_and_velocity',self.srv_reset_pose_and_velocity)
 
-	def srv_reset_pose_and_velocity(self,request,response):
+	def srv_reset_pose_and_velocity(self,request,response:TriggerSrv.Response):
 		"""
 		Runs when a request is made to reset the pose and velocity of the vessel
 		"""
-		self.vessel.pose = np.array(POSE_INITIAL)
-		self.vessel.vel = np.array(VELOCITY_INITIAL)
+		self.vessel.pose = np.array(self.get_parameter("initial_pose").get_parameter_value().double_array_value)
+		self.vessel.vel = np.array(self.get_parameter("initial_velocity").get_parameter_value().double_array_value)
 		response.success = True
 		return response
 
@@ -632,12 +585,13 @@ class VesselSimNode(Node):
 		self.timestamp_last_actuator_ref_callback= time.time()
 	
 	def print_status(self):
+		period_report_status = self.get_parameter("period_report_status").get_parameter_value().double_value
 		# Determine system frequencies rounded to two decimals
-		freq_callback_reference = round(self.tracker_callback_actuator_reference/PERIOD_REPORT_STATUS,2)
-		freq_callback_simstep = round(self.tracker_iteration_simstep/PERIOD_REPORT_STATUS,2)
-		freq_callback_pub_pos = round(self.tracker_callback_pub_pos/PERIOD_REPORT_STATUS,2)
-		freq_callback_pub_heading = round(self.tracker_pub_heading/PERIOD_REPORT_STATUS,2)
-		freq_callback_pub_aux = round(self.tracker_callback_pub_auxiliary/PERIOD_REPORT_STATUS,2)
+		freq_callback_reference = round(self.tracker_callback_actuator_reference/period_report_status,2)
+		freq_callback_simstep = round(self.tracker_iteration_simstep/period_report_status,2)
+		freq_callback_pub_pos = round(self.tracker_callback_pub_pos/period_report_status,2)
+		freq_callback_pub_heading = round(self.tracker_pub_heading/period_report_status,2)
+		freq_callback_pub_aux = round(self.tracker_callback_pub_auxiliary/period_report_status,2)
 		
 		# Make strings of numbers without color if above zero and and rascolors.FAIL otherwise
 		freq_sim_step_str = Statuscolors.OKGREEN +str(freq_callback_simstep)  + Statuscolors.NORMAL if freq_callback_simstep > 0 else Statuscolors.FAIL + str(freq_callback_simstep) + Statuscolors.NORMAL
@@ -647,13 +601,12 @@ class VesselSimNode(Node):
 		freq_actuator_reference_str = Statuscolors.OKGREEN +str(freq_callback_reference)  + Statuscolors.NORMAL if freq_callback_reference > 0 else Statuscolors.FAIL + str(freq_callback_reference) + Statuscolors.NORMAL
 
 		# print vessel name in blue following time, frequencies of mainloop, simstep and actuator reference
-		statusstring = ' ' + Statuscolors.OKBLUE + self.vessel.name + Statuscolors.NORMAL+ \
-					' f_sim='+freq_sim_step_str+ \
-					' f_actuator_ref='+freq_actuator_reference_str+ \
-					' f_pub_pos='+freq_pub_pos_str+ \
-					' f_pub_heading='+freq_pub_heading_str
+		statusstring = 	' f_sim='+freq_sim_step_str+ \
+						' f_actuator_ref='+freq_actuator_reference_str+ \
+						' f_pub_pos='+freq_pub_pos_str+ \
+						' f_pub_heading='+freq_pub_heading_str
 		
-		if STREAM_AUXILIARY:
+		if self.get_parameter("stream_auxiliary_state").get_parameter_value().bool_value:
 			self.get_logger().info(statusstring+ ' f_pub_aux='+freq_pub_aux_str)
 		else:
 			self.get_logger().info(statusstring)
