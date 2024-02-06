@@ -433,7 +433,7 @@ class VesselSimNode(Node):
 	def check_actuator_reference_timeout(self):
 
 		if not self.actuationState == ActuationState.timeout:
-			if time.time() -self.timestamp_last_actuator_ref_callback > REFERENCE_RUNTIME_TIMEOUT:
+			if time.time() -self.timestamp_last_actuator_ref_callback > self.get_parameter("reference_runtime_timeout").get_parameter_value().double_value:
 				self.actuationState = ActuationState.timeout
 				print('Actuation reference timed out')
 				stopmsg = Float32MultiArray()
