@@ -184,7 +184,6 @@ class Vessel:
 			elif self.alpha[nthr] > self.alpha_lims[nthr][1]:
 				self.alpha[nthr] = self.alpha_lims[nthr][1]
 
-	
 	def getCoriolisCentripetal_total(self):
 		return getCoriolisCentripetal(self.vel,self.M)
 
@@ -341,7 +340,7 @@ class VesselSimNode(Node):
 			# Convert to North-east-down tangent displacements: (cartesian local coordinate system)
 			dpos_tangent = np.matmul(self.vessel.getRbn(),d_eta[0:3])
 
-			# Conversion to geographical displacement (geographical global coordinate system)
+			# Conversion from displacement in meters (d_north, d_east) to geographical (d_latitude,d_longitude)
 			dlat =np.rad2deg(np.arctan2(dpos_tangent[0],R_EARTH)) # degrees
 			r_earth_at_lat = np.cos(np.deg2rad(self.vessel.pose[0]))*R_EARTH	# Radius of slice of earth at particular latitude
 			dlong = np.rad2deg(np.arctan2(dpos_tangent[1],r_earth_at_lat))
