@@ -1,14 +1,14 @@
 from std_msgs.msg import Float32MultiArray, Float32
 import time
 import math
-from sensor_msgs.msg import NavSatFix 
+from sensor_msgs.msg import NavSatFix, JointState
 from geometry_msgs.msg import Wrench, Twist
 import numpy as np
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import Trigger as TriggerSrv
 from sensor_msgs.msg import Imu
-from turtleboat.utils import euler_to_quaternion, ActuationState, SimulationState, cross3, R3_euler_xyz, getCoriolisCentripetal, Statuscolors
+from turtleboat.utils import euler_to_quaternion, ActuationState, SimulationState, cross3, R3_euler_xyz, getCoriolisCentripetal, Statuscolors, get_value_from_jointstate
 R_EARTH = 6371000 #m
 
 class Vessel:	
@@ -19,7 +19,6 @@ class Vessel:
 	def __init__(self,pose_,vel_):
 		"""
 		Constructor for the vessel class
-		:param name_: name of the vessel
 		:param pose_: initial pose of the vessel
 		:param vel_: initial velocity of the vessel
 		:return: the created object
@@ -266,8 +265,8 @@ class VesselSimNode(Node):
 		# Make ros2 publishers and subscribers for main functionality
 		self.positionPub = self.create_publisher(NavSatFix, 'telemetry/gnss/fix', 10)
 		self.headingPub = self.create_publisher(Float32, 'telemetry/heading', 10)
-		self.actuatorReferenceSub_prio = self.create_subscription(Float32MultiArray, 'reference/actuation_prio',self.actuationCallback_prio,10)
-		self.actuatorReferenceSub = self.create_subscription(Float32MultiArray, 'reference/actuation',self.actuationCallback,10)
+		self.actuatorReferenceSub_prio = self.create_subscription(JointState, 'reference/actuation_prio',self.actuationCallback_prio,10)
+		self.actuatorReferenceSub = self.create_subscription(JointState, 'reference/actuation',self.actuationCallback,10)
 	
 		# Optional publishers that communicate diagnostics and system state
 		if self.get_parameter("stream_auxiliary_state").get_parameter_value().bool_value:
@@ -286,7 +285,7 @@ class VesselSimNode(Node):
 		self.timer_simstep = self.create_timer(1/self.get_parameter("simulator_frequency_target").get_parameter_value().double_value, self.timer_callback_simstep)
 		self.timer_publish_pos = self.create_timer(1/self.get_parameter("rate_publish_position").get_parameter_value().double_value, self.timer_callback_publish_pos)
 		self.timer_publish_heading = self.create_timer(1/self.get_parameter("rate_publish_heading").get_parameter_value().double_value, self.timer_callback_publish_heading)
-		self.timer_report_status = self.create_timer(self.get_parameter("period_report_status").get_parameter_value().double_value, self.timer_callback_report_status)
+		self.timer_report_status = self.create_timer(self.get_parameter("period_report_status").get_parameter_value().double_value, self.print_status)
 		if self.get_parameter("stream_auxiliary_state").get_parameter_value().bool_value:
 			self.timer_publish_auxiliary = self.create_timer(1/self.get_parameter("rate_publish_auxiliary_state").get_parameter_value().double_value, self.timer_callback_publish_auxiliary)
 
@@ -409,10 +408,6 @@ class VesselSimNode(Node):
 			msg_imu.orientation.z = quats[2]
 			msg_imu.orientation.w = quats[3]
 			self.imuPub.publish(msg_imu)
-
-	def timer_callback_report_status(self):
-		self.print_status()
-		self.resetTrackers()
 		
 	def actuationCallback_prio(self,msg):
 		"""
@@ -431,47 +426,54 @@ class VesselSimNode(Node):
 			self.actuationState = ActuationState.normal
 
 	def check_actuator_reference_timeout(self):
+		"""
+		Checks if the actuation reference has timed out. 
+		If so, the actuator references are set to zero so the vessel stops its actuation.
+
+		This function being periodically called also enables the control mode to switch from priority mode to normal when the former stops streaming for a while, whilst the latter is operational. 
+		"""
 
 		if not self.actuationState == ActuationState.timeout:
 			if time.time() -self.timestamp_last_actuator_ref_callback > self.get_parameter("reference_runtime_timeout").get_parameter_value().double_value:
 				self.actuationState = ActuationState.timeout
-				print('Actuation reference timed out')
-				stopmsg = Float32MultiArray()
-				stopmsg.data = [0.0,0.0,0.0,0.0,0.0]
-				self.process_actuation(stopmsg)
+				print('Actuation reference timed out - disabling all actuators.')
+
+				# Stop propellers (set all elements of u_ref to zero)
+				self.vessel.u_ref[:] = np.zeros(len(self.vessel.u_ref))
+
+				# Zero thruster angles
+				self.vessel.alpha_ref[:] = np.zeros(len(self.vessel.alpha_ref))
 		
 	def process_actuation(self,msg):
 		"""
 		Sets tito neri actuation from respective ros topic
-		
-		Note that this funtion is currently hardcoded towards the current Tito Neri actuation array definition. This is not generalized and prone to change. Future versions can generalize this callback structure. 
-		
-		Future versions will also have this function assign reference that supports limiting actuator rate change. 
+		:param msg: joint state message
 		"""
+
 		if self.actuationState == ActuationState.timeout:
 			print('Detected new actuation stream; Listening to commands')
 		self.timestamp_last_actuator_ref_callback = time.time()
 		self.tracker_callback_actuator_reference += 1
 
-		# Set aft thrusters
-		for i in [0,1]:
-			if not math.isnan(msg.data[i]):
-				self.vessel.u_ref[i] = msg.data[i]/60 # convert from rpm to rps
-				
-		# Set bow thruster
-		if not math.isnan(msg.data[2]):
-			self.vessel.u_ref[2] = msg.data[2]
-		
-		# Set thruster angles
-		for i in [0,1]:
-			if not math.isnan(msg.data[i+3]):
-				self.vessel.alpha_ref[i] = msg.data[i+3]
-		
-		
+		# Set actuator references
+		self.vessel.u_ref[0] = get_value_from_jointstate(msg,'RAS_TN_DB_SB_aft_thruster_propeller',1)/60 # convert from rpm to rps
+		self.vessel.u_ref[1] = get_value_from_jointstate(msg,'RAS_TN_DB_PS_aft_thruster_propeller',1)/60 # convert from rpm to rps
+		self.vessel.u_ref[2] = get_value_from_jointstate(msg,'RAS_TN_DB_BOW_thruster_propeller',1)
+
+		self.vessel.alpha_ref[0] = get_value_from_jointstate(msg,'RAS_TN_DB_PS_aft_thruster_joint',0)
+		self.vessel.alpha_ref[1] = get_value_from_jointstate(msg,'RAS_TN_DB_SB_aft_thruster_joint',0)
+
 		self.timestamp_last_actuator_ref_callback= time.time()
 	
 	def print_status(self):
+		'''
+		Prints the status of this simulation node to the ros logger, with fancy colors.
+		- Calculates rates of various callbacks based on trackers
+		- Prints the rates
+		'''
+
 		period_report_status = self.get_parameter("period_report_status").get_parameter_value().double_value
+
 		# Determine system frequencies rounded to two decimals
 		freq_callback_reference = round(self.tracker_callback_actuator_reference/period_report_status,2)
 		freq_callback_simstep = round(self.tracker_iteration_simstep/period_report_status,2)
@@ -497,7 +499,13 @@ class VesselSimNode(Node):
 		else:
 			self.get_logger().info(statusstring)
 
+		# Reset the trackers for the next iteration
+		self.resetTrackers()
+
 	def resetTrackers(self):
+		'''
+		Zeroes all rate trackers
+		'''
 		self.tracker_iteration_simstep = 0
 		self.tracker_callback_pub_pos = 0
 		self.tracker_pub_heading = 0

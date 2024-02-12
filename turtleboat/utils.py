@@ -1,5 +1,27 @@
 from enum import Enum, auto
 import numpy as np
+from sensor_msgs.msg import NavSatFix, JointState
+
+def get_value_from_jointstate(message:JointState,name_item:str,type:int=0):
+	""" looks through the jointstate messsage for the specified item 
+	
+	:param: message = JointState message
+	:param: name_item = name of the item to look for
+	:param: type = 0 for position, 1 for velocity, 2 for effort
+	
+	"""
+	for i in range(0, len(message.name) ):
+		if message.name[i] == name_item:
+			if type == 0:
+				return message.position[i]
+			elif type == 1:
+				return message.velocity[i]
+			elif type == 2:
+				return message.effort[i]
+			else:
+				return np.nan
+			
+	return np.nan
 
 def euler_to_quaternion(roll, pitch, yaw):
 	"""
