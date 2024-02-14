@@ -1,3 +1,4 @@
+from array import array
 from std_msgs.msg import Float32MultiArray, Float32
 import time
 import math
@@ -456,13 +457,38 @@ class VesselSimNode(Node):
 		self.tracker_callback_actuator_reference += 1
 
 		# Set actuator references
+		sb_aft_propeller = get_value_from_jointstate(msg,'SB_aft_thruster_propeller',paramtype:=1)/60 # convert from rpm to rps
+		ps_aft_propeller = get_value_from_jointstate(msg,'PS_aft_thruster_propeller',paramtype:=1)/60 # convert from rpm to rps
+		bow_thruster = get_value_from_jointstate(msg,'BOW_thruster_propeller',paramtype:=1)
+
+		sb_aft_angle = get_value_from_jointstate(msg,'SB_aft_thruster_joint',paramtype:=0)
+		ps_aft_angle = get_value_from_jointstate(msg,'PS_aft_thruster_joint',paramtype:=0)
+		
+		# if the value is not nan, set the actuator reference
+		if not math.isnan(sb_aft_propeller):
+			self.vessel.u_ref[0] = sb_aft_propeller
+		if not math.isnan(ps_aft_propeller):
+			self.vessel.u_ref[1] = ps_aft_propeller
+		if not math.isnan(bow_thruster):
+			self.vessel.u_ref[2] = bow_thruster
+
+		if not math.isnan(sb_aft_angle):
+			self.vessel.alpha_ref[0] = sb_aft_angle
+		if not math.isnan(ps_aft_angle):
+			self.vessel.alpha_ref[1] = ps_aft_angle
+
+
+
+
+
+		'''
 		self.vessel.u_ref[0] = get_value_from_jointstate(msg,'RAS_TN_DB_SB_aft_thruster_propeller',1)/60 # convert from rpm to rps
 		self.vessel.u_ref[1] = get_value_from_jointstate(msg,'RAS_TN_DB_PS_aft_thruster_propeller',1)/60 # convert from rpm to rps
 		self.vessel.u_ref[2] = get_value_from_jointstate(msg,'RAS_TN_DB_BOW_thruster_propeller',1)
 
 		self.vessel.alpha_ref[0] = get_value_from_jointstate(msg,'RAS_TN_DB_PS_aft_thruster_joint',0)
 		self.vessel.alpha_ref[1] = get_value_from_jointstate(msg,'RAS_TN_DB_SB_aft_thruster_joint',0)
-
+		'''
 		self.timestamp_last_actuator_ref_callback= time.time()
 	
 	def print_status(self):
@@ -533,18 +559,18 @@ class VesselSimNode(Node):
 
 		# Resultant forces of actuators:
 		msg = Wrench()
-		msg.force.x,msg.force.y,msg.force.z = self.Fact[0:3]
-		msg.torque.x,msg.torque.y,msg.torque.z = self.Fact[3:6]
+		msg.force.x,msg.force.y,msg.force.z = float(self.Fact[0]),float(self.Fact[1]),float(self.Fact[2])
+		msg.torque.x,msg.torque.y,msg.torque.z = float(self.Fact[3]),float(self.Fact[4]),float(self.Fact[5])
 		self.forcePub_actuator.publish(msg)
 
 		# actuation reference
 		msg = Float32MultiArray()
-		msg.data = [self.vessel.u_ref[0]*60,self.vessel.u_ref[1]*60,self.vessel.u_ref[2], self.vessel.alpha_ref[0], self.vessel.alpha_ref[1], self.vessel.alpha_ref[2]]
+		msg.data = [float(self.vessel.u_ref[0]*60.0),float(self.vessel.u_ref[1]*60.0),float(self.vessel.u_ref[2]),float( self.vessel.alpha_ref[0]),float( self.vessel.alpha_ref[1]),float( self.vessel.alpha_ref[2])]
 		self.actuatorRefPub.publish(msg)
 
 		# actuation state
 		msg = Float32MultiArray()
-		msg.data = [self.vessel.u[0].astype(float)*60,self.vessel.u[1].astype(float)*60,self.vessel.u[2].astype(float), self.vessel.alpha[0], self.vessel.alpha[1], self.vessel.alpha[2]]
+		msg.data = [float(self.vessel.u[0]*60.0),float(self.vessel.u[1]*60.0),float(self.vessel.u[2]),float(self.vessel.alpha[0]),float(self.vessel.alpha[1]),float(self.vessel.alpha[2])]
 		self.actuatorStatePub.publish(msg)
 
 		# drag
